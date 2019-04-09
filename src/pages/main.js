@@ -161,7 +161,7 @@ class ResourceFormMain extends connect(store)(ResourceDataParser) {
     this.resourceForm = state.resourceForm.state_main
     this.resourceId = state.app.resourceId
 
-    if (this.resourceId) this._getResourceData()
+    if (this.resourceId && state.app.page === 'resource-form-main') this._getResourceData()
   }
 }
 
