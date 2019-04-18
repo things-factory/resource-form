@@ -1,7 +1,6 @@
-import { LitElement } from 'lit-element'
+export const parser = baseElement =>
+  class extends baseElement {
 
-
-export default class ResourceDataParser extends LitElement {
   _parseButtons(buttonList) {
     if (buttonList) {
       buttonList.forEach(function(button) {

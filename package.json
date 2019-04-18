@@ -1,6 +1,6 @@
 {
   "name": "@things-factory/resource-form",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "src/index.js",
   "things-factory": true,
   "license": "MIT",
@@ -13,5 +13,8 @@
     "@things-factory/menu-provider": "*",
     "@things-factory/shell": "*"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@things-factory/auth-ui-session": "*",
+    "@things-factory/tester": "*"
+  }
 }
