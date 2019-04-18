@@ -1,4 +1,4 @@
-import { store, PageView, PageToolbar } from '@things-factory/shell'
+import { store, PageView } from '@things-factory/shell'
 
 import { html, css } from 'lit-element'
 import { connect } from 'pwa-helpers/connect-mixin.js'
