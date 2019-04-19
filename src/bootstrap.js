@@ -1,8 +1,6 @@
 import { store } from '@things-factory/shell'
-import resourceForm from './reducers/main'
+import { addRoutingType } from '@things-factory/base-menu'
 
 export default function bootstrap() {
-  store.addReducers({
-    resourceForm
-  })
+  store.dispatch(addRoutingType('RESOURCE', 'resource-form'))
 }

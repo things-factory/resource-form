@@ -5,8 +5,8 @@ export default {
   route,
   routes: [
     {
-      tagname: 'resource-form-main',
-      pageName: 'resource-form-main'
+      tagname: 'resource-form',
+      pageName: 'resource-form'
     }
   ],
   bootstrap

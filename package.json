@@ -1,6 +1,6 @@
 {
   "name": "@things-factory/resource-form",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "main": "src/index.js",
   "things-factory": true,
   "license": "MIT",
@@ -10,11 +10,13 @@
     "serve:dev": "webpack-dev-server --config ./node_modules/@things-factory/shell/webpack.config.dev.js"
   },
   "dependencies": {
-    "@things-factory/menu-provider": "*",
+    "@things-factory/base-menu": "*",
     "@things-factory/shell": "*"
   },
   "devDependencies": {
     "@things-factory/auth-ui-session": "*",
+    "@things-factory/menu-provider": "*",
+    "@things-factory/menu-ui": "*",
     "@things-factory/tester": "*"
   }
 }

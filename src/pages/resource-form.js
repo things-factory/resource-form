@@ -2,7 +2,7 @@ import { store, PageView } from '@things-factory/shell'
 
 import { html, css } from 'lit-element'
 import { connect } from 'pwa-helpers/connect-mixin.js'
-import { parser } from '../components/resource-parser'
+import { parser } from '../mixin/resource-parser'
 
 class ResourceFormMain extends connect(store)(parser(PageView)) {
   static get styles() {
@@ -25,7 +25,8 @@ class ResourceFormMain extends connect(store)(parser(PageView)) {
   static get properties() {
     return {
       resourceForm: String,
-      resourceId: String
+      resourceId: String,
+      baseUrl: String
     }
   }
 
@@ -87,7 +88,6 @@ class ResourceFormMain extends connect(store)(parser(PageView)) {
 
   async _getResourceData() {
     // TODO: get base url from store or somthing...
-    this.baseUrl = 'http://52.231.75.202/rest'
     const res = await fetch(`${this.baseUrl}/menus/${this.resourceId}/menu_meta`, {
       credentials: 'include'
     })
@@ -161,11 +161,17 @@ class ResourceFormMain extends connect(store)(parser(PageView)) {
   }
 
   stateChanged(state) {
-    this.resourceForm = state.resourceForm.state_main
+    this.baseUrl = state.app.baseUrl
     this.resourceId = state.app.resourceId
+  }
 
-    if (this.resourceId && state.app.page === 'resource-form-main') this._getResourceData()
+  updated(changed) {
+    if (changed.has('active')) {
+      if (this.active) {
+        this._getResourceData()
+      }
+    }
   }
 }
 
-window.customElements.define('resource-form-main', ResourceFormMain)
+window.customElements.define('resource-form', ResourceFormMain)
