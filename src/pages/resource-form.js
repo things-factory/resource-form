@@ -167,9 +167,11 @@ class ResourceFormMain extends connect(store)(parser(PageView)) {
 
   updated(changed) {
     if (changed.has('active')) {
-      if (this.active) {
-        this._getResourceData()
-      }
+      /*
+        page가 active 상태인 경우만, updated가 호출된다.
+        따라서, 이 부분에는 active 상태가 false => true 로 된 경우에 처리할 작업을 수행한다.
+      */
+      this.active && this._getResourceData()
     }
   }
 }
