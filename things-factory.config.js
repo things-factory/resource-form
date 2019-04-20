@@ -6,7 +6,7 @@ export default {
   routes: [
     {
       tagname: 'resource-form',
-      pageName: 'resource-form'
+      page: 'resource-form'
     }
   ],
   bootstrap

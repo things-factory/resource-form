@@ -1,6 +1,6 @@
 {
   "name": "@things-factory/resource-form",
-  "version": "0.0.6",
+  "version": "0.1.0",
   "main": "src/index.js",
   "things-factory": true,
   "license": "MIT",
