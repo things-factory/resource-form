@@ -12,13 +12,15 @@ class ResourceFormMain extends connect(store)(parser(PageView)) {
         display: flex;
         flex-direction: column;
       }
+
       section {
         flex: 1;
         display: flex;
         flex-direction: column;
       }
+
       textarea {
-        height: 400px;
+        flex: 1;
       }
     `
   }
@@ -32,11 +34,11 @@ class ResourceFormMain extends connect(store)(parser(PageView)) {
 
   render() {
     return html`
-      <page-toolbar></page-toolbar>
+      <page-toolbar>
+        <label>${this.menuTitle}</label>
+      </page-toolbar>
 
-      <header>
-        ${this.renderTitle()} ${this.renderSearchForm()}
-      </header>
+      <header>${this.renderSearchForm()}</header>
 
       <section>
         ${this.renderGrid()}
@@ -45,12 +47,6 @@ class ResourceFormMain extends connect(store)(parser(PageView)) {
       <footer>
         ${this.renderButton()}
       </footer>
-    `
-  }
-
-  renderTitle() {
-    return html`
-      <h2>${this.menuTitle}</h2>
     `
   }
 
