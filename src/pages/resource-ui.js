@@ -1,10 +1,10 @@
-import { store, PageView } from '@things-factory/shell'
-
 import { html, css } from 'lit-element'
 import { connect } from 'pwa-helpers/connect-mixin.js'
-import { parser } from '../mixin/resource-parser'
 
-class ResourceFormMain extends connect(store)(parser(PageView)) {
+import { store, PageView } from '@things-factory/shell'
+import { resourceParser } from '@things-factory/base-resource'
+
+class ResourceUI extends connect(store)(resourceParser(PageView)) {
   static get styles() {
     return css`
       :host {
@@ -172,4 +172,4 @@ class ResourceFormMain extends connect(store)(parser(PageView)) {
   }
 }
 
-window.customElements.define('resource-form', ResourceFormMain)
+window.customElements.define('resource-ui', ResourceUI)

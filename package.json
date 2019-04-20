@@ -1,5 +1,5 @@
 {
-  "name": "@things-factory/resource-form",
+  "name": "@things-factory/resource-ui-mobile",
   "version": "0.1.1",
   "main": "src/index.js",
   "things-factory": true,
@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@things-factory/base-menu": "*",
+    "@things-factory/base-resource": "*",
     "@things-factory/shell": "*"
   },
   "devDependencies": {
