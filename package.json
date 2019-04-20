@@ -1,6 +1,6 @@
 {
   "name": "@things-factory/resource-ui-mobile",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "main": "src/index.js",
   "things-factory": true,
   "license": "MIT",
@@ -10,8 +10,8 @@
     "serve:dev": "webpack-dev-server --config ./node_modules/@things-factory/shell/webpack.config.dev.js"
   },
   "dependencies": {
-    "@things-factory/base-menu": "*",
-    "@things-factory/base-resource": "*",
+    "@things-factory/menu-base": "*",
+    "@things-factory/resource-base": "*",
     "@things-factory/shell": "*"
   },
   "devDependencies": {

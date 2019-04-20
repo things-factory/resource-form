@@ -2,7 +2,7 @@ import { html, css } from 'lit-element'
 import { connect } from 'pwa-helpers/connect-mixin.js'
 
 import { store, PageView } from '@things-factory/shell'
-import { resourceParser } from '@things-factory/base-resource'
+import { resourceParser } from '@things-factory/resource-base'
 
 class ResourceUI extends connect(store)(resourceParser(PageView)) {
   static get styles() {
