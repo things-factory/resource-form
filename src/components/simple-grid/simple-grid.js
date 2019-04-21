@@ -3,6 +3,7 @@ import { ScrollbarStyles } from '@things-factory/shell'
 
 import './simple-grid-header'
 import './simple-grid-body'
+import './simple-grid-footer'
 
 class SimpleGrid extends LitElement {
   constructor() {
@@ -78,6 +79,7 @@ class SimpleGrid extends LitElement {
     return html`
       <simple-grid-header .columns=${columns}></simple-grid-header>
       <simple-grid-body .columns=${columns} .data=${this.data}></simple-grid-body>
+      <simple-grid-footer .columns=${columns} .data=${this.data}></simple-grid-footer>
     `
   }
 }

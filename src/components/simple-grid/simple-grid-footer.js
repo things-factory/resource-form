@@ -24,21 +24,28 @@ class SimpleGridFooter extends LitElement {
 
           overflow: hidden;
 
-          line-height: var(--grid-header-height, 32px);
+          line-height: var(--grid-footer-height, 24px);
         }
 
         span {
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
+
+          text-align: right;
+
+          background-color: var(--grid-footer-background-color, gray);
+          color: var(--grid-footer-color, white);
         }
       `
     ]
   }
 
   render() {
-    return html``
+    return html`
+      <span>Total : ${(this.data || []).length} records.</span>
+    `
   }
 }
 
-customElements.define('simple-grid-fotter', SimpleGridFooter)
+customElements.define('simple-grid-footer', SimpleGridFooter)
