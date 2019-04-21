@@ -21,6 +21,7 @@ class SimpleGridHeader extends LitElement {
           grid-template-columns: var(--grid-template-columns);
 
           overflow: hidden;
+          font-weight: bold;
 
           height: var(--grid-header-height, 32px);
         }

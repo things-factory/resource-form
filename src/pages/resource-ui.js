@@ -97,7 +97,7 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
     if (res.ok) {
       const json = await res.json()
       if (json) {
-        this.menuTitle = json.menu.name
+        this.menuTitle = json.menu.title
         this.resourceUrl = json.menu.resource_url
         this._parseResourceMeta(json)
       }

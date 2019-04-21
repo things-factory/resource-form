@@ -22,6 +22,7 @@ class SimpleGridFooter extends LitElement {
 
           overflow: hidden;
 
+          font-size: 0.8em;
           line-height: var(--grid-footer-height, 24px);
         }
 
@@ -41,7 +42,7 @@ class SimpleGridFooter extends LitElement {
 
   render() {
     return html`
-      <span>Total : ${(this.data || []).length} records.</span>
+      <span>total ${(this.data || []).length} records.</span>
     `
   }
 }
