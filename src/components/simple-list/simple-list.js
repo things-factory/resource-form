@@ -41,7 +41,7 @@ class SimpleList extends LitElement {
           color: gray;
         }
 
-        .updated-at {
+        .update-info {
           font-size: 0.8em;
           color: black;
         }
@@ -63,7 +63,7 @@ class SimpleList extends LitElement {
             <div class="desc">${record[columns[1].name]}</div>
             ${record.updated_at
               ? html`
-                  <div class="updated-at">Updated At : ${record.updated_at} / ${record.updater_id}</div>
+                  <div class="update-info">Updated At : ${record.updated_at} / ${record.updater_id}</div>
                 `
               : ``}
           </div>
