@@ -71,6 +71,9 @@ class SimpleGridFooter extends LitElement {
   }
 
   _gotoPage(page) {
+    if (page > Math.ceil(this.total / this.limit) || page < 0) {
+      return
+    }
     this.dispatchEvent(new CustomEvent('page-changed', { bubbles: true, composed: true, detail: page }))
   }
 

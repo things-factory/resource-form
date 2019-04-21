@@ -43,8 +43,10 @@ class SimpleGridBody extends LitElement {
   }
 
   render() {
+    var data = this.data || []
+
     return html`
-      ${(this.data && this.data.length > 0 ? this.data : [{}]).map(
+      ${data.map(
         (record, i) => html`
           ${this.columns.map(
             column =>

@@ -77,22 +77,15 @@ class SimpleGrid extends LitElement {
 
   render() {
     var columns = this.columns.filter(column => column.grid_width)
+    var data = (this.data && this.data.items) || []
+    var total = (this.data && this.data.total) || 0
+    var limit = this.limit || 50
+    var page = this.page || 1
 
     return html`
       <simple-grid-header .columns=${columns}></simple-grid-header>
-      <simple-grid-body .columns=${columns} .data=${this.data && this.data.items}></simple-grid-body>
-      <simple-grid-footer
-        .data=${this.data && this.data.items}
-        .total=${this.data && this.data.total}
-        .limit=${this.limit || 50}
-        .page=${this.page || 1}
-        @page-changed=${e => {
-          this.page = e.detail
-        }}
-        @limit-changed=${e => {
-          this.limit = e.detail
-        }}
-      ></simple-grid-footer>
+      <simple-grid-body .columns=${columns} .data=${data}></simple-grid-body>
+      <simple-grid-footer .data=${data} .total=${total} .limit=${limit} .page=${page}></simple-grid-footer>
     `
   }
 }

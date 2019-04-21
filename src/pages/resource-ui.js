@@ -1,33 +1,39 @@
 import { html, css } from 'lit-element'
 import { connect } from 'pwa-helpers/connect-mixin.js'
 
-import { store, PageView } from '@things-factory/shell'
+import { store, PageView, ScrollbarStyles } from '@things-factory/shell'
 import { resourceParser } from '@things-factory/resource-base'
 
 import '../components/simple-grid/simple-grid'
+import '../components/simple-list/simple-list'
 
 class ResourceUI extends connect(store)(resourceParser(PageView)) {
   static get styles() {
-    return css`
-      :host {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-      }
+    return [
+      ScrollbarStyles,
+      css`
+        :host {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+        }
 
-      simple-grid {
-        flex: 1;
-      }
+        section {
+          flex: 1;
 
-      section {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-      }
-    `
+          display: flex;
+          flex-direction: column;
+        }
+
+        section * {
+          flex: 1;
+        }
+      `
+    ]
   }
   static get properties() {
     return {
+      layout: String,
       resourceForm: String,
       resourceId: String,
       baseUrl: String,
@@ -46,7 +52,9 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
 
       <header>${this.renderSearchForm()}</header>
 
-      ${this.renderGrid()}
+      <section>
+        ${this.renderGrid()}
+      </section>
 
       <footer>
         ${this.renderButton()}
@@ -70,19 +78,37 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
 
   renderGrid() {
     return html`
-      <simple-grid
-        .columns=${this._columns}
-        .data=${this.data}
-        .limit=${this.limit}
-        .page=${this.page}
-        @page-changed=${e => {
-          this.page = e.detail
-        }}
-        @limit-changed=${e => {
-          this.limit = e.detail
-        }}
-      >
-      </simple-grid>
+      ${this.layout == 'WIDE'
+        ? html`
+            <simple-grid
+              .columns=${this._columns}
+              .data=${this.data}
+              .limit=${this.limit}
+              .page=${this.page}
+              @page-changed=${e => {
+                this.page = e.detail
+              }}
+              @limit-changed=${e => {
+                this.limit = e.detail
+              }}
+            >
+            </simple-grid>
+          `
+        : html`
+            <simple-list
+              .columns=${this._columns}
+              .data=${this.data}
+              .limit=${this.limit}
+              .page=${this.page}
+              @page-changed=${e => {
+                this.page = e.detail
+              }}
+              @limit-changed=${e => {
+                this.limit = e.detail
+              }}
+            >
+            </simple-list>
+          `}
     `
   }
 
@@ -182,6 +208,7 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
   }
 
   stateChanged(state) {
+    this.layout = state.app.layout
     this.baseUrl = state.app.baseUrl
     this.resourceId = state.app.resourceId
   }
