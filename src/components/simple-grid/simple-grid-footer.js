@@ -4,13 +4,11 @@ class SimpleGridFooter extends LitElement {
   constructor() {
     super()
 
-    this.columns = []
     this.data = []
   }
 
   static get properties() {
     return {
-      columns: Array,
       data: Array
     }
   }
