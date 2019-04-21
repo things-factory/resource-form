@@ -4,6 +4,8 @@ import { connect } from 'pwa-helpers/connect-mixin.js'
 import { store, PageView } from '@things-factory/shell'
 import { resourceParser } from '@things-factory/resource-base'
 
+import '../components/simple-grid/simple-grid'
+
 class ResourceUI extends connect(store)(resourceParser(PageView)) {
   static get styles() {
     return css`
@@ -13,14 +15,14 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
         flex-direction: column;
       }
 
+      simple-grid {
+        flex: 1;
+      }
+
       section {
         flex: 1;
         display: flex;
         flex-direction: column;
-      }
-
-      textarea {
-        flex: 1;
       }
     `
   }
@@ -28,7 +30,9 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
     return {
       resourceForm: String,
       resourceId: String,
-      baseUrl: String
+      baseUrl: String,
+      data: Object,
+      _columns: Array
     }
   }
 
@@ -40,9 +44,7 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
 
       <header>${this.renderSearchForm()}</header>
 
-      <section>
-        ${this.renderGrid()}
-      </section>
+      ${this.renderGrid()}
 
       <footer>
         ${this.renderButton()}
@@ -66,7 +68,7 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
 
   renderGrid() {
     return html`
-      <textarea id="grid"></textarea>
+      <simple-grid .columns=${this._columns} .data=${this.data && this.data.items}> </simple-grid>
     `
   }
 
@@ -80,6 +82,10 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
         })}
       </div>
     `
+  }
+
+  get searchForm() {
+    return this.shadowRoot.querySelector('#search-form')
   }
 
   async _getResourceData() {
@@ -99,6 +105,8 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
   }
 
   _parseResourceMeta(metaData) {
+    this._columns = metaData.columns
+
     // 1. Buttons
     this.buttons = metaData.buttons
     // 2. Parse Sort Fields - search form
@@ -126,7 +134,12 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
 
   _handleFormSubmit(event) {
     event.preventDefault()
-    const fields = Array.from(event.currentTarget.children)
+
+    this._searchData()
+  }
+
+  async _searchData() {
+    const fields = Array.from(this.searchForm.children)
     const searchConditions = []
     fields.forEach(f => {
       if (f.name && f.value) {
@@ -138,12 +151,8 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
       }
     })
 
-    this._searchData(searchConditions)
-  }
-
-  async _searchData(conditions) {
     const searchParams = new URLSearchParams()
-    searchParams.append('query', JSON.stringify(conditions))
+    searchParams.append('query', JSON.stringify(searchConditions))
     const res = await fetch(`${this.baseUrl}/${this.resourceUrl}?${searchParams}`, {
       credentials: 'include'
     })
@@ -151,7 +160,6 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
       let data = await res.json()
       if (data) {
         this.data = data
-        this.shadowRoot.querySelector('#grid').value = JSON.stringify(this.data)
       }
     }
   }
@@ -167,7 +175,14 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
         page가 active 상태인 경우만, updated가 호출된다.
         따라서, 이 부분에는 active 상태가 false => true 로 된 경우에 처리할 작업을 수행한다.
       */
-      this.active && this._getResourceData()
+      if (this.active) {
+        this.data = []
+        this.searchForm.reset()
+
+        this._getResourceData().then(() => {
+          this._searchData()
+        })
+      }
     }
   }
 }
