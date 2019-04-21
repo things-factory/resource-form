@@ -32,6 +32,11 @@ class SimpleGridBody extends LitElement {
           text-overflow: ellipsis;
 
           height: var(--grid-record-height, 32px);
+          background-color: var(--grid-record-background-color, white);
+        }
+
+        span[odd] {
+          background-color: var(--grid-record-odd-background-color, #eee);
         }
       `
     ]
@@ -40,11 +45,11 @@ class SimpleGridBody extends LitElement {
   render() {
     return html`
       ${(this.data && this.data.length > 0 ? this.data : [{}]).map(
-        record => html`
+        (record, i) => html`
           ${this.columns.map(
             column =>
               html`
-                <span>${record[column.name]}</span>
+                <span ?odd=${i % 2}>${record[column.name]}</span>
               `
           )}
         `
