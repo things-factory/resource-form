@@ -80,7 +80,7 @@ class SimpleGridFooter extends LitElement {
 
   render() {
     var data = this.data || []
-    var begin = data.length * (this.page - 1)
+    var begin = this.limit * (this.page - 1) + 1
     var end = begin + data.length - 1
     var totalPage = Math.ceil(this.total / this.limit)
 

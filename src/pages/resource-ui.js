@@ -32,6 +32,8 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
       resourceId: String,
       baseUrl: String,
       data: Object,
+      page: Number,
+      limit: Number,
       _columns: Array
     }
   }
@@ -68,7 +70,19 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
 
   renderGrid() {
     return html`
-      <simple-grid .columns=${this._columns} .data=${this.data}> </simple-grid>
+      <simple-grid
+        .columns=${this._columns}
+        .data=${this.data}
+        .limit=${this.limit}
+        .page=${this.page}
+        @page-changed=${e => {
+          this.page = e.detail
+        }}
+        @limit-changed=${e => {
+          this.limit = e.detail
+        }}
+      >
+      </simple-grid>
     `
   }
 
@@ -153,6 +167,9 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
 
     const searchParams = new URLSearchParams()
     searchParams.append('query', JSON.stringify(searchConditions))
+    searchParams.append('page', this.page || 1)
+    searchParams.append('limit', this.limit || 50)
+
     const res = await fetch(`${this.baseUrl}/${this.resourceUrl}?${searchParams}`, {
       credentials: 'include'
     })
@@ -183,6 +200,10 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
           this._searchData()
         })
       }
+    }
+
+    if (changed.has('limit') || changed.has('page')) {
+      this._searchData()
     }
   }
 }

@@ -16,7 +16,9 @@ class SimpleGrid extends LitElement {
   static get properties() {
     return {
       columns: Array,
-      data: Array
+      data: Array,
+      limit: Number,
+      page: Number
     }
   }
 
@@ -82,6 +84,14 @@ class SimpleGrid extends LitElement {
       <simple-grid-footer
         .data=${this.data && this.data.items}
         .total=${this.data && this.data.total}
+        .limit=${this.limit || 50}
+        .page=${this.page || 1}
+        @page-changed=${e => {
+          this.page = e.detail
+        }}
+        @limit-changed=${e => {
+          this.limit = e.detail
+        }}
       ></simple-grid-footer>
     `
   }
