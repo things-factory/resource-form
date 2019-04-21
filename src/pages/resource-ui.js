@@ -68,7 +68,7 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
 
   renderGrid() {
     return html`
-      <simple-grid .columns=${this._columns} .data=${this.data && this.data.items}> </simple-grid>
+      <simple-grid .columns=${this._columns} .data=${this.data}> </simple-grid>
     `
   }
 

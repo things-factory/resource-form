@@ -78,8 +78,11 @@ class SimpleGrid extends LitElement {
 
     return html`
       <simple-grid-header .columns=${columns}></simple-grid-header>
-      <simple-grid-body .columns=${columns} .data=${this.data}></simple-grid-body>
-      <simple-grid-footer .data=${this.data}></simple-grid-footer>
+      <simple-grid-body .columns=${columns} .data=${this.data && this.data.items}></simple-grid-body>
+      <simple-grid-footer
+        .data=${this.data && this.data.items}
+        .total=${this.data && this.data.total}
+      ></simple-grid-footer>
     `
   }
 }

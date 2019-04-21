@@ -5,11 +5,13 @@ class SimpleGridFooter extends LitElement {
     super()
 
     this.data = []
+    this.total = 0
   }
 
   static get properties() {
     return {
-      data: Array
+      data: Array,
+      total: Number
     }
   }
 
@@ -42,7 +44,7 @@ class SimpleGridFooter extends LitElement {
 
   render() {
     return html`
-      <span>total ${(this.data || []).length} records.</span>
+      <span>total ${(this.data || []).length}/${this.total || 0} records.</span>
     `
   }
 }
