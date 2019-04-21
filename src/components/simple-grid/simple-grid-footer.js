@@ -8,7 +8,7 @@ class SimpleGridFooter extends LitElement {
 
     this.data = []
     this.total = 0
-    this.page = 0
+    this.page = 1
     this.limit = 50
   }
 
@@ -45,8 +45,8 @@ class SimpleGridFooter extends LitElement {
           color: var(--grid-footer-color, white);
         }
 
-        span {
-          height: var(--grid-footer-height, 24px);
+        .filler {
+          flex: 1;
         }
 
         mwc-icon {
@@ -54,41 +54,54 @@ class SimpleGridFooter extends LitElement {
           vertical-align: middle;
         }
 
-        span.limit a {
+        .limit a {
           color: lightgray;
         }
 
-        span.limit a[selected] {
+        .limit a[selected] {
           color: white;
           font-weight: bold;
         }
 
-        .filler {
-          flex: 1;
+        a[inactive] * {
+          color: lightgray;
         }
       `
     ]
   }
 
-  get totalPage() {}
+  _gotoPage(page) {
+    this.dispatchEvent(new CustomEvent('page-changed', { bubbles: true, composed: true, detail: page }))
+  }
+
+  _changeLimit(limit) {
+    this.dispatchEvent(new CustomEvent('limit-changed', { bubbles: true, composed: true, detail: limit }))
+  }
 
   render() {
     var data = this.data || []
-    var begin = data.length * this.page + 1
+    var begin = data.length * (this.page - 1)
     var end = begin + data.length - 1
+    var totalPage = Math.ceil(this.total / this.limit)
 
     return html`
-      <a><mwc-icon>skip_previous</mwc-icon></a>
-      <a><mwc-icon>navigate_before</mwc-icon></a>
-      <span>page ${this.page + 1}&nbsp;/&nbsp;${Math.ceil(this.total / this.limit)}</span>
-      <a><mwc-icon>navigate_next</mwc-icon></a>
-      <a><mwc-icon>skip_next</mwc-icon></a>
+      <a ?inactive=${this.page <= 1} @click=${e => this._gotoPage(1)}><mwc-icon>skip_previous</mwc-icon></a>
+      <a ?inactive=${this.page <= 1} @click=${e => this._gotoPage(this.page - 1)}
+        ><mwc-icon>navigate_before</mwc-icon></a
+      >
+      <span>page ${this.page}&nbsp;/&nbsp;${totalPage}</span>
+      <a ?inactive=${this.page >= totalPage} @click=${e => this._gotoPage(this.page + 1)}
+        ><mwc-icon>navigate_next</mwc-icon></a
+      >
+      <a ?inactive=${this.page >= totalPage} @click=${e => this._gotoPage(totalPage)}><mwc-icon>skip_next</mwc-icon></a>
+
       <span class="filler"></span>
+
       <span class="limit">
-        <a ?selected=${this.limit == 20}>20</a>
-        <a ?selected=${this.limit == 30}>30</a>
-        <a ?selected=${this.limit == 50}>50</a>
-        <a ?selected=${this.limit == 100}>100</a>
+        <a ?selected=${this.limit == 20} @click=${e => this._changeLimit(20)}>20</a>
+        <a ?selected=${this.limit == 30} @click=${e => this._changeLimit(30)}>30</a>
+        <a ?selected=${this.limit == 50} @click=${e => this._changeLimit(50)}>50</a>
+        <a ?selected=${this.limit == 100} @click=${e => this._changeLimit(100)}>100</a>
         items
       </span>
       <span>&nbsp;</span>
