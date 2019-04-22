@@ -19,10 +19,6 @@ class SimpleGridBody extends LitElement {
     return [
       css`
         :host {
-          --grid-record-wide-fontsize: 13px;
-          --grid-record-background-color: #fff;
-          --grid-record-odd-background-color: #f3f4f6;
-
           display: grid;
           grid-template-columns: var(--grid-template-columns);
           grid-auto-rows: var(--grid-record-height, 32px);
@@ -60,6 +56,7 @@ class SimpleGridBody extends LitElement {
                 <span ?odd=${i % 2}>${record[column.name]}</span>
               `
           )}
+          <span ?odd=${i % 2}></span>
         `
       )}
     `

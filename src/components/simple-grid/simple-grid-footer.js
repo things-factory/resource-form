@@ -25,8 +25,6 @@ class SimpleGridFooter extends LitElement {
     return [
       css`
         :host {
-          --grid-footer-background-color:#93a4c3;
-
           display: flex;
           flex-direction: row;
           overflow: hidden;

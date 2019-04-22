@@ -17,17 +17,10 @@ class SimpleGridHeader extends LitElement {
     return [
       css`
         :host {
-          --grid-header-background-color:#eceff4;
-          --grid-header-border-color:#b9c4d7;
-          --grid-header-color:#47596d;
-          --grid-header-fontsize: 13px;
-
           display: grid;
           grid-template-columns: var(--grid-template-columns);
 
           overflow: hidden;
-
-          
         }
 
         span {
@@ -67,6 +60,7 @@ class SimpleGridHeader extends LitElement {
             <span>${column.term}</span>
           `
       )}
+      <span></span>
     `
   }
 }
