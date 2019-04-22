@@ -25,23 +25,23 @@ class SimpleGridFooter extends LitElement {
     return [
       css`
         :host {
+          --grid-footer-background-color:#93a4c3;
+
           display: flex;
           flex-direction: row;
-
           overflow: hidden;
 
           font-size: 0.8em;
-          line-height: var(--grid-footer-height, 24px);
         }
 
         :host * {
           white-space: nowrap;
           overflow: hidden;
-          text-overflow: ellipsis;
-
-          text-align: center;
-
           background-color: var(--grid-footer-background-color, gray);
+          padding:0 2px;
+
+          text-overflow: ellipsis;
+          text-align: center;
           color: var(--grid-footer-color, white);
         }
 

@@ -31,8 +31,6 @@ class SimpleGrid extends LitElement {
           flex-direction: column;
 
           overflow: hidden;
-
-          line-height: var(--grid-header-height, 32px);
         }
 
         simple-grid-body {

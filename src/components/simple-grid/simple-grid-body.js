@@ -19,6 +19,10 @@ class SimpleGridBody extends LitElement {
     return [
       css`
         :host {
+          --grid-record-wide-fontsize: 13px;
+          --grid-record-background-color: #fff;
+          --grid-record-odd-background-color: #f3f4f6;
+
           display: grid;
           grid-template-columns: var(--grid-template-columns);
           grid-auto-rows: var(--grid-record-height, 32px);
@@ -29,10 +33,12 @@ class SimpleGridBody extends LitElement {
         span {
           white-space: nowrap;
           overflow: hidden;
-          text-overflow: ellipsis;
-
-          height: var(--grid-record-height, 32px);
           background-color: var(--grid-record-background-color, white);
+          padding:7px 5px;
+          border-bottom: 1px solid rgba(0,0,0,.1);
+
+          font-size: var(--grid-record-wide-fontsize);
+          text-overflow: ellipsis;
         }
 
         span[odd] {

@@ -22,13 +22,11 @@ class SimpleList extends LitElement {
       css`
         :host {
           overflow: auto;
-          padding: 5px;
         }
 
         .item {
-          margin: 5px;
-
-          border-bottom: solid 1px #ccc;
+          padding:5px 15px 5px 15px;
+          border-bottom: 1px solid rgba(0,0,0,.1);
         }
 
         .name {

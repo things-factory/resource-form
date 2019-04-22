@@ -17,23 +17,30 @@ class SimpleGridHeader extends LitElement {
     return [
       css`
         :host {
+          --grid-header-background-color:#eceff4;
+          --grid-header-border-color:#b9c4d7;
+          --grid-header-color:#47596d;
+          --grid-header-fontsize: 13px;
+
           display: grid;
           grid-template-columns: var(--grid-template-columns);
 
           overflow: hidden;
-          font-weight: bold;
 
-          height: var(--grid-header-height, 32px);
+          
         }
 
         span {
           white-space: nowrap;
           overflow: hidden;
-          text-overflow: ellipsis;
-
-          text-align: center;
-
           background-color: var(--grid-header-background-color, gray);
+          border:1px solid var(--grid-header-border-color);
+          border-width:1px 0;
+          padding:5px 0;
+
+          text-overflow: ellipsis;
+          text-align: center;
+          font-size: var(--grid-header-fontsize);
           color: var(--grid-header-color, white);
         }
       `
