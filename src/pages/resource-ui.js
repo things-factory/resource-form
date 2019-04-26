@@ -44,12 +44,14 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
     }
   }
 
+  get tools() {
+    return html`
+      <label>${this.menuTitle}</label>
+    `
+  }
+
   render() {
     return html`
-      <page-toolbar>
-        <label>${this.menuTitle}</label>
-      </page-toolbar>
-
       <header>${this.renderSearchForm()}</header>
 
       <section>
