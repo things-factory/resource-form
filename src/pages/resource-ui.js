@@ -198,7 +198,7 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
   }
 
   stateChanged(state) {
-    this.layout = state.app.layout
+    this.layout = state.layout.width
     this.baseUrl = state.app.baseUrl
     this.resourceId = state.app.resourceId
   }
