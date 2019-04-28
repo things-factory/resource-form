@@ -13,24 +13,20 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
       ScrollbarStyles,
       css`
         :host {
-          height: 100%;
           display: flex;
           flex-direction: column;
+
+          overflow: hidden;
         }
 
-        section {
-          flex: 1;
-
-          display: flex;
-          flex-direction: column;
-        }
-
-        section * {
+        simple-grid,
+        simple-list {
           flex: 1;
         }
       `
     ]
   }
+
   static get properties() {
     return {
       layout: String,
@@ -54,32 +50,6 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
     return html`
       <header>${this.renderSearchForm()}</header>
 
-      <section>
-        ${this.renderGrid()}
-      </section>
-
-      <footer>
-        ${this.renderButton()}
-      </footer>
-    `
-  }
-
-  renderSearchForm() {
-    return html`
-      <form id="search-form" @submit="${this._handleFormSubmit}">
-        ${(this.searchFormFields || []).map(searchFormField => {
-          return html`
-            <input name="${searchFormField.name}" placeholder="${searchFormField.label}" op="${searchFormField.op}" />
-          `
-        })}
-
-        <button>Search</button>
-      </form>
-    `
-  }
-
-  renderGrid() {
-    return html`
       ${this.layout == 'WIDE'
         ? html`
             <simple-grid
@@ -111,6 +81,24 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
             >
             </simple-list>
           `}
+
+      <footer>
+        ${this.renderButton()}
+      </footer>
+    `
+  }
+
+  renderSearchForm() {
+    return html`
+      <form id="search-form" @submit="${this._handleFormSubmit}">
+        ${(this.searchFormFields || []).map(searchFormField => {
+          return html`
+            <input name="${searchFormField.name}" placeholder="${searchFormField.label}" op="${searchFormField.op}" />
+          `
+        })}
+
+        <button>Search</button>
+      </form>
     `
   }
 
