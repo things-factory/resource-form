@@ -40,10 +40,10 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
     }
   }
 
-  get tools() {
-    return html`
-      <label>${this.menuTitle}</label>
-    `
+  get context() {
+    return {
+      title: this.menuTitle
+    }
   }
 
   render() {
@@ -214,6 +214,7 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
         this.searchForm.reset()
 
         this._getResourceData().then(() => {
+          this.updateContext()
           this._searchData()
         })
       }

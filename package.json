@@ -1,6 +1,6 @@
 {
   "name": "@things-factory/resource-ui-mobile",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "main": "src/index.js",
   "things-factory": true,
   "license": "MIT",
@@ -16,6 +16,7 @@
   },
   "devDependencies": {
     "@things-factory/auth-ui-session": "*",
+    "@things-factory/layout-ui": "*",
     "@things-factory/menu-provider": "*",
     "@things-factory/menu-ui": "*",
     "@things-factory/tester": "*"
