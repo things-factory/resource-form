@@ -40,9 +40,40 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
     }
   }
 
+  save() {}
+  delete() {}
+  add() {}
+  export() {}
+  imporT() {}
+
   get context() {
     return {
-      title: this.menuTitle
+      title: this.menuTitle,
+      features: {
+        printable: {
+          target: this
+        },
+        exportable: {
+          handler: this.export.bind(this)
+        },
+        importable: {
+          handler: this.imporT.bind(this)
+        }
+      },
+      actions: [
+        {
+          title: i18n.t('actions.add'),
+          action: this.add.bind(this)
+        },
+        {
+          title: i18n.t('actions.delete'),
+          action: this.delete.bind(this)
+        },
+        {
+          title: i18n.t('actions.save'),
+          action: this.save.bind(this)
+        }
+      ]
     }
   }
 
