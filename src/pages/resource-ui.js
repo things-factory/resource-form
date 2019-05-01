@@ -49,21 +49,20 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
   get context() {
     return {
       title: this.menuTitle,
-      features: {
-        printable: {
-          target: this
-        },
-        exportable: {
-          handler: this.export.bind(this)
-        },
-        importable: {
-          handler: this.imporT.bind(this)
-        }
+      printable: {
+        target: this
+      },
+      exportable: {
+        handler: this.export.bind(this)
+      },
+      importable: {
+        handler: this.imporT.bind(this)
       },
       actions: [
         {
           title: i18n.t('actions.add'),
-          action: this.add.bind(this)
+          action: this.add.bind(this),
+          select: ['1line', '2line', '3line']
         },
         {
           title: i18n.t('actions.delete'),
