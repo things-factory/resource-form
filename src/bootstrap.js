@@ -1,3 +1,5 @@
+import { html } from 'lit-html'
+
 import { store } from '@things-factory/shell'
 import { addRoutingType } from '@things-factory/menu-base'
 
@@ -9,9 +11,12 @@ export default function bootstrap() {
 
   store.dispatch({
     type: APPEND_FOOTERBAR,
-    template: html`
-      <page-action-context-bar></page-action-context-bar>
-    `,
-    position: TOOL_POSITION.REAR_END
+    footer: {
+      template: html`
+        <page-action-context-bar></page-action-context-bar>
+      `,
+      position: TOOL_POSITION.REAR_END,
+      context: 'actions'
+    }
   })
 }

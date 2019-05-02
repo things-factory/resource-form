@@ -6,7 +6,7 @@ import { store } from '@things-factory/shell'
 class PageActionContextBar extends connect(store)(LitElement) {
   static get properties() {
     return {
-      actions: Array
+      _actions: Array
     }
   }
 
@@ -22,7 +22,7 @@ class PageActionContextBar extends connect(store)(LitElement) {
 
   render() {
     return html`
-      ${this.actions.map(
+      ${this._actions.map(
         action => html`
           ${action.select && action.select.length > 0
             ? html`
