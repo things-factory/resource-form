@@ -4,6 +4,8 @@ import { connect } from 'pwa-helpers/connect-mixin.js'
 import { store, PageView, ScrollbarStyles } from '@things-factory/shell'
 import { resourceParser } from '@things-factory/resource-base'
 
+import { i18next } from '@things-factory/i18n-base'
+
 import '../components/simple-grid/simple-grid'
 import '../components/simple-list/simple-list'
 
@@ -40,11 +42,21 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
     }
   }
 
-  save() {}
-  delete() {}
-  add() {}
-  export() {}
-  imporT() {}
+  save() {
+    console.log('save')
+  }
+  delete() {
+    console.log('delete')
+  }
+  add(e) {
+    console.log(e)
+  }
+  export() {
+    console.log('export')
+  }
+  imporT() {
+    console.log('imporT')
+  }
 
   get context() {
     return {
@@ -60,16 +72,16 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
       },
       actions: [
         {
-          title: i18n.t('actions.add'),
+          title: i18next.t('action.add'),
           action: this.add.bind(this),
           select: ['1line', '2line', '3line']
         },
         {
-          title: i18n.t('actions.delete'),
+          title: i18next.t('action.delete'),
           action: this.delete.bind(this)
         },
         {
-          title: i18n.t('actions.save'),
+          title: i18next.t('action.save'),
           action: this.save.bind(this)
         }
       ]
@@ -111,10 +123,6 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
             >
             </simple-list>
           `}
-
-      <footer>
-        ${this.renderButton()}
-      </footer>
     `
   }
 
@@ -129,18 +137,6 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
 
         <button>Search</button>
       </form>
-    `
-  }
-
-  renderButton() {
-    return html`
-      <div id="btn-container">
-        ${(this.buttons || []).map(button => {
-          return html`
-            <button id="${button.text}-btn" @click="${this._handleBtnClick}">${button.text}</button>
-          `
-        })}
-      </div>
     `
   }
 
