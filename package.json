@@ -10,6 +10,7 @@
     "serve:dev": "webpack-dev-server --config ./node_modules/@things-factory/shell/webpack.config.dev.js"
   },
   "dependencies": {
+    "@things-factory/layout-base": "*",
     "@things-factory/menu-base": "*",
     "@things-factory/resource-base": "*",
     "@things-factory/shell": "*"
