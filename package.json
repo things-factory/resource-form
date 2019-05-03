@@ -1,6 +1,6 @@
 {
   "name": "@things-factory/resource-ui-mobile",
-  "version": "0.1.24",
+  "version": "0.1.25",
   "main": "src/index.js",
   "things-factory": true,
   "license": "MIT",
@@ -23,6 +23,9 @@
     "@things-factory/layout-ui": "*",
     "@things-factory/menu-provider": "*",
     "@things-factory/menu-ui": "*",
+    "@things-factory/more-ui": "*",
+    "@things-factory/print-ui": "*",
+    "@things-factory/setting-ui": "*",
     "@things-factory/tester": "*"
   }
 }
