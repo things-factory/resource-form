@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "@things-factory/auth-ui-session": "*",
+    "@things-factory/i18n-ui": "*",
     "@things-factory/layout-ui": "*",
     "@things-factory/menu-provider": "*",
     "@things-factory/menu-ui": "*",
