@@ -1,5 +1,6 @@
-import { connect } from 'pwa-helpers/connect-mixin'
 import { LitElement, html, css } from 'lit-element'
+import { connect } from 'pwa-helpers/connect-mixin'
+import '@material/base/component'
 
 import { store } from '@things-factory/shell'
 
@@ -35,7 +36,7 @@ class PageActionContextBar extends connect(store)(LitElement) {
                 </select>
               `
             : html`
-                <button @click="${action.action}">${action.title}</button>
+                <mwc-button @click="${action.action}">${action.title}</mwc-button>
               `}
         `
       )}
