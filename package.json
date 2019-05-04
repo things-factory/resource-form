@@ -1,6 +1,6 @@
 {
   "name": "@things-factory/resource-ui-mobile",
-  "version": "0.1.27",
+  "version": "0.1.28",
   "main": "src/index.js",
   "things-factory": true,
   "license": "MIT",
@@ -9,8 +9,7 @@
     "serve": "things-factory",
     "serve:dev": "things-factory-dev",
     "build:client": "webpack --config node_modules/@things-factory/shell/webpack.config.js",
-    "migration": "things-factory-migration",
-    "prepublish": "npm version patch"
+    "migration": "things-factory-migration"
   },
   "dependencies": {
     "@things-factory/layout-base": "*",
