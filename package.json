@@ -1,6 +1,6 @@
 {
   "name": "@things-factory/resource-ui-mobile",
-  "version": "0.1.26",
+  "version": "0.1.27",
   "main": "src/index.js",
   "things-factory": true,
   "license": "MIT",
