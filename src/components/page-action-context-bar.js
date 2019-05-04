@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit-element'
 import { connect } from 'pwa-helpers/connect-mixin'
-import '@material/base/component'
+
+import '@material/mwc-button'
 
 import { store } from '@things-factory/shell'
 
