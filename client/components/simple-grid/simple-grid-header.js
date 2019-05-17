@@ -1,4 +1,5 @@
 import { LitElement, html, css } from 'lit-element'
+import { i18next } from '@things-factory/i18n-base'
 
 class SimpleGridHeader extends LitElement {
   constructor() {
@@ -27,9 +28,9 @@ class SimpleGridHeader extends LitElement {
           white-space: nowrap;
           overflow: hidden;
           background-color: var(--grid-header-background-color, gray);
-          border:1px solid var(--grid-header-border-color);
-          border-width:1px 0;
-          padding:5px 0;
+          border: 1px solid var(--grid-header-border-color);
+          border-width: 1px 0;
+          padding: 5px 0;
 
           text-overflow: ellipsis;
           text-align: center;
@@ -57,7 +58,7 @@ class SimpleGridHeader extends LitElement {
       ${this.columns.map(
         column =>
           html`
-            <span>${column.term}</span>
+            <span>${i18next.t(column.term)}</span>
           `
       )}
       <span></span>

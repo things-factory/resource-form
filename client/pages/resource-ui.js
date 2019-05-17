@@ -1,11 +1,10 @@
-import { html, css } from 'lit-element'
-import { connect } from 'pwa-helpers/connect-mixin.js'
-
-import { store, PageView, ScrollbarStyles } from '@things-factory/shell'
-import { resourceParser } from '@things-factory/resource-base'
-
 import { i18next } from '@things-factory/i18n-base'
-
+import { client } from '@things-factory/provider-base-gql'
+import { resourceParser } from '@things-factory/resource-base'
+import { PageView, ScrollbarStyles, store } from '@things-factory/shell'
+import gql from 'graphql-tag'
+import { css, html } from 'lit-element'
+import { connect } from 'pwa-helpers/connect-mixin.js'
 import '../components/simple-grid/simple-grid'
 import '../components/simple-list/simple-list'
 
@@ -42,49 +41,18 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
     }
   }
 
-  save() {
-    console.log('save')
-  }
-  delete() {
-    console.log('delete')
-  }
-  add(e) {
-    console.log(e)
-  }
-  export() {
-    console.log('export')
-  }
-  imporT() {
-    console.log('imporT')
-  }
-
   get context() {
     return {
       title: this.menuTitle,
-      printable: {
-        target: this
-      },
-      exportable: {
-        handler: this.export.bind(this)
-      },
-      importable: {
-        handler: this.imporT.bind(this)
-      },
-      actions: [
-        {
-          title: i18next.t('action.add'),
-          action: this.add.bind(this),
-          select: ['1line', '2line', '3line']
-        },
-        {
-          title: i18next.t('action.delete'),
-          action: this.delete.bind(this)
-        },
-        {
-          title: i18next.t('action.save'),
-          action: this.save.bind(this)
+      printable: true,
+      actions: (this.buttons || []).map(button => {
+        return {
+          title: button.text,
+          action: function() {
+            console.log(button.text)
+          }
         }
-      ]
+      })
     }
   }
 
@@ -131,7 +99,11 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
       <form id="search-form" @submit="${this._handleFormSubmit}">
         ${(this.searchFormFields || []).map(searchFormField => {
           return html`
-            <input name="${searchFormField.name}" placeholder="${searchFormField.label}" op="${searchFormField.op}" />
+            <input
+              name="${searchFormField.name}"
+              placeholder="${i18next.t(searchFormField.label)}"
+              op="${searchFormField.op}"
+            />
           `
         })}
 
@@ -145,23 +117,54 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
   }
 
   async _getResourceData() {
-    // TODO: get base url from store or somthing...
-    const res = await fetch(`${this.baseUrl}/menus/${this.resourceId}/menu_meta`, {
-      credentials: 'include'
+    const response = await client.query({
+      query: gql`
+        query {
+          menu(id: "${this.resourceId}") {
+            name,
+            resourceUrl,
+            buttons {
+              text
+            },
+            columns {
+              name
+              term
+              colType
+              colSize
+              nullable
+              refType
+              refName
+              refUrl
+              refRelated
+              searchRank
+              sortRank
+              searchEditor
+              searchOperator
+              searchInitVal
+              gridRank
+              gridEditor
+              gridFormat
+              gridValidator
+              gridWidth
+              gridAlign
+              formEditor
+              formValidator
+              formFormat
+              defVal
+              rangeVal
+              ignoreOnSave
+            }
+          }
+        }
+      `
     })
-
-    if (res.ok) {
-      const json = await res.json()
-      if (json) {
-        this.menuTitle = json.menu.title
-        this.resourceUrl = json.menu.resource_url
-        this._parseResourceMeta(json)
-      }
-    }
+    this.menuTitle = i18next.t(response.data.menu.name)
+    this.resourceUrl = response.data.menu.resourceUrl
+    this._parseResourceMeta(response.data.menu)
   }
 
   _parseResourceMeta(metaData) {
-    this._columns = metaData.columns
+    this._columns = this._sortBy('gridRank', metaData.columns)
 
     // 1. Buttons
     this.buttons = metaData.buttons
@@ -178,6 +181,19 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
     // 7. Parse Grid Columns - grid form
     // this.gridColumns = this._parseGridColumns(metaData.columns)
     this.requestUpdate()
+  }
+
+  _sortBy(key, list) {
+    list.sort((a, b) => {
+      if (a[key] < b[key]) {
+        return -1
+      } else if (a[key] > b[key]) {
+        return 1
+      }
+      return 0
+    })
+
+    return list
   }
 
   _handleBtnClick(event) {
@@ -229,7 +245,7 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
     this.resourceId = state.route.resourceId
   }
 
-  updated(changed) {
+  async updated(changed) {
     if (changed.has('active')) {
       /*
         page가 active 상태인 경우만, updated가 호출된다.
@@ -239,10 +255,9 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
         this.data = []
         this.searchForm.reset()
 
-        this._getResourceData().then(() => {
-          this.updateContext()
-          this._searchData()
-        })
+        await this._getResourceData()
+        this.updateContext()
+        this._searchData()
       }
     }
 

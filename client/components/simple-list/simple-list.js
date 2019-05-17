@@ -25,8 +25,8 @@ class SimpleList extends LitElement {
         }
 
         .item {
-          padding:5px 15px 5px 15px;
-          border-bottom: 1px solid rgba(0,0,0,.1);
+          padding: 5px 15px 5px 15px;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.1);
         }
 
         .name {
@@ -50,7 +50,7 @@ class SimpleList extends LitElement {
   updated(changes) {}
 
   render() {
-    var columns = this.columns.filter(column => column.grid_width)
+    var columns = this.columns.filter(column => column.gridWidth)
     var data = (this.data && this.data.items) || []
 
     return html`
@@ -59,9 +59,9 @@ class SimpleList extends LitElement {
           <div class="item">
             <div class="name">${record[columns[0].name]}</div>
             <div class="desc">${record[columns[1].name]}</div>
-            ${record.updated_at
+            ${record.updatedAt
               ? html`
-                  <div class="update-info">Updated At : ${record.updated_at} / ${record.updater_id}</div>
+                  <div class="update-info">Updated At : ${record.updatedAt} / ${record.updaterId}</div>
                 `
               : ``}
           </div>

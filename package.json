@@ -1,6 +1,6 @@
 {
   "name": "@things-factory/resource-ui-mobile",
-  "version": "0.1.31",
+  "version": "0.1.32",
   "main": "dist-server/index.js",
   "browser": "client/index.js",
   "things-factory": true,
@@ -29,7 +29,6 @@
   "devDependencies": {
     "@things-factory/auth-ui-session": "*",
     "@things-factory/layout-ui": "*",
-    "@things-factory/menu-provider": "*",
     "@things-factory/menu-ui": "*",
     "@things-factory/more-ui": "*",
     "@things-factory/print-ui": "*",

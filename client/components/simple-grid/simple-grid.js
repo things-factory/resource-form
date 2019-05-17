@@ -66,15 +66,17 @@ class SimpleGrid extends LitElement {
     if (changes.has('columns')) {
       /* 설명. 컬럼 모델 마지막에 'auto' 템플릿을 추가하여, 자투리 영역을 꽉 채워서 표시한다. */
       let gridTemplateColumns = this.columns
-        .filter(column => column.grid_width)
-        .map((column, i, arr) => `${column.grid_width}px`).concat(['auto']).join(' ')
+        .filter(column => column.gridWidth)
+        .map((column, i, arr) => `${column.gridWidth}px`)
+        .concat(['auto'])
+        .join(' ')
 
       this.style.setProperty('--grid-template-columns', gridTemplateColumns)
     }
   }
 
   render() {
-    var columns = this.columns.filter(column => column.grid_width)
+    var columns = this.columns.filter(column => column.gridWidth)
     var data = (this.data && this.data.items) || []
     var total = (this.data && this.data.total) || 0
     var limit = this.limit || 50
