@@ -1,7 +1,6 @@
 import { i18next } from '@things-factory/i18n-base'
-import { client } from '@things-factory/provider-base-gql'
 import { resourceParser } from '@things-factory/resource-base'
-import { PageView, ScrollbarStyles, store } from '@things-factory/shell'
+import { PageView, ScrollbarStyles, store, client } from '@things-factory/shell'
 import gql from 'graphql-tag'
 import { css, html } from 'lit-element'
 import { connect } from 'pwa-helpers/connect-mixin.js'
