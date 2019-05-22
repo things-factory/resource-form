@@ -23,6 +23,8 @@
     "migration:revert": "node ./node_modules/typeorm/cli.js migration:revert"
   },
   "dependencies": {
+    "@things-factory/auth-provider-jwt": "*",
+    "@things-factory/auth-ui-jwt": "*",
     "@things-factory/i18n-ui": "*",
     "@things-factory/layout-base": "*",
     "@things-factory/menu-base": "*",
@@ -30,7 +32,6 @@
     "@things-factory/shell": "*"
   },
   "devDependencies": {
-    "@things-factory/auth-ui-session": "*",
     "@things-factory/layout-ui": "*",
     "@things-factory/menu-ui": "*",
     "@things-factory/more-ui": "*",
