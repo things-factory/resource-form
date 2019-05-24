@@ -32,10 +32,10 @@ class ResourceUI extends connect(store)(PageView) {
       resourceForm: String,
       resourceId: String,
       baseUrl: String,
-      data: Object,
       page: Number,
       limit: Number,
-      _columns: Array
+      _columns: Array,
+      data: Array
     }
   }
 
@@ -94,7 +94,13 @@ class ResourceUI extends connect(store)(PageView) {
 
   renderSearchForm() {
     return html`
-      <form id="search-form" @submit="${this._handleFormSubmit}">
+      <form
+        id="search-form"
+        @submit="${e => {
+          e.preventDefault()
+          this._searchData()
+        }}"
+      >
         ${(this.searchFormFields || []).map(searchFormField => {
           return html`
             <input
@@ -207,79 +213,22 @@ class ResourceUI extends connect(store)(PageView) {
 
   _handleFormSubmit(event) {
     event.preventDefault()
-
     this._searchData()
   }
 
   async _searchData() {
-    const fields = Array.from(this.searchForm.children)
-    const searchConditions = []
-    fields.forEach(f => {
-      if (f.name && f.value) {
-        searchConditions.push({
-          name: f.name,
-          value: f.value,
-          operator: f.getAttribute('op')
-        })
-      }
-    })
-
-    const searchParams = new URLSearchParams()
-    searchParams.append('query', JSON.stringify(searchConditions))
-    searchParams.append('page', this.page || 1)
-    searchParams.append('limit', this.limit || 50)
-
     const response = await client.query({
       query: gql`
         ${this._queryBuilder()}
       `
     })
 
-    this.data = response.data[this.resourceUrl]
-
-    // const response = await client.query({
-    //   query: gql`
-    //     query {
-    //       menus: userMenus {
-    //         id
-    //         name
-    //         children {
-    //           id
-    //           name
-    //           routingType
-    //           idField
-    //           resourceName
-    //         }
-    //       }
-    //     }
-    //   `
-    // })
-
-    // query {
-    //   companies {
-    //     id
-    //     name
-    //     description
-    //     countryCode
-    //     address
-    //     brn
-    //     bizplaces {
-    //       id
-    //       name
-    //     }
-    //     state
-    //   }
-    // }
-
-    // const res = await fetch(`${this.baseUrl}/${this.resourceUrl}?${searchParams}`, {
-    //   credentials: 'include'
-    // })
-    // if (res.ok) {
-    //   let data = await res.json()
-    //   if (data) {
-    //     this.data = data
-    //   }
-    // }
+    this.data = {
+      items: response.data[this.resourceUrl],
+      totla: response.data[this.resourceUrl].length,
+      page: this.page,
+      limit: this.limit
+    }
   }
 
   _queryBuilder() {
