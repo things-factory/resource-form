@@ -1,13 +1,12 @@
 import { i18next } from '@things-factory/i18n-base'
-import { resourceParser } from '@things-factory/resource-base'
-import { PageView, ScrollbarStyles, store, client } from '@things-factory/shell'
+import { client, PageView, ScrollbarStyles, store } from '@things-factory/shell'
 import gql from 'graphql-tag'
 import { css, html } from 'lit-element'
 import { connect } from 'pwa-helpers/connect-mixin.js'
 import '../components/simple-grid/simple-grid'
 import '../components/simple-list/simple-list'
 
-class ResourceUI extends connect(store)(resourceParser(PageView)) {
+class ResourceUI extends connect(store)(PageView) {
   static get styles() {
     return [
       ScrollbarStyles,
@@ -100,7 +99,7 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
           return html`
             <input
               name="${searchFormField.name}"
-              placeholder="${i18next.t(searchFormField.label)}"
+              placeholder="${i18next.t(searchFormField.term)}"
               op="${searchFormField.op}"
             />
           `
@@ -157,9 +156,10 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
         }
       `
     })
-    this.menuTitle = i18next.t(response.data.menu.name)
-    this.resourceUrl = response.data.menu.resourceUrl
-    this._parseResourceMeta(response.data.menu)
+    this.menuMeta = response.data.menu
+    this.menuTitle = i18next.t(this.menuMeta.name)
+    this.resourceUrl = this.menuMeta.resourceUrl
+    this._parseResourceMeta(this.menuMeta)
   }
 
   _parseResourceMeta(metaData) {
@@ -172,7 +172,9 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
     // 3. Parse Select Fields - search form
     // this.selectFields = this._parseSelectFields(metaData.columns)
     // 4. Parse Search Form Fields - search form
-    this.searchFormFields = this._parseSearchFormFields(metaData.columns)
+    this.searchFormFields = metaData.columns.filter(column => {
+      return column.searchRank && column.searchRank > 0
+    })
     // 5. Parse Resource Form Fields - detail form
     // this.resourceFormFields = this._parseResourceFormFields(metaData.columns)
     // 6. Parse Grid Models - grid form
@@ -227,15 +229,77 @@ class ResourceUI extends connect(store)(resourceParser(PageView)) {
     searchParams.append('page', this.page || 1)
     searchParams.append('limit', this.limit || 50)
 
-    const res = await fetch(`${this.baseUrl}/${this.resourceUrl}?${searchParams}`, {
-      credentials: 'include'
+    const response = await client.query({
+      query: gql`
+        ${this._queryBuilder()}
+      `
     })
-    if (res.ok) {
-      let data = await res.json()
-      if (data) {
-        this.data = data
+
+    this.data = response.data[this.resourceUrl]
+
+    // const response = await client.query({
+    //   query: gql`
+    //     query {
+    //       menus: userMenus {
+    //         id
+    //         name
+    //         children {
+    //           id
+    //           name
+    //           routingType
+    //           idField
+    //           resourceName
+    //         }
+    //       }
+    //     }
+    //   `
+    // })
+
+    // query {
+    //   companies {
+    //     id
+    //     name
+    //     description
+    //     countryCode
+    //     address
+    //     brn
+    //     bizplaces {
+    //       id
+    //       name
+    //     }
+    //     state
+    //   }
+    // }
+
+    // const res = await fetch(`${this.baseUrl}/${this.resourceUrl}?${searchParams}`, {
+    //   credentials: 'include'
+    // })
+    // if (res.ok) {
+    //   let data = await res.json()
+    //   if (data) {
+    //     this.data = data
+    //   }
+    // }
+  }
+
+  _queryBuilder() {
+    let fields = []
+    this._columns.forEach(c => {
+      if (c.refType === 'Entity') {
+        fields.push(`${c.name} { id name description }`)
+      } else {
+        fields.push(c.name)
       }
-    }
+    })
+    fields = fields.join()
+
+    return `
+      query {
+        ${this.resourceUrl} {
+          ${fields}
+        }
+      }
+    `
   }
 
   stateChanged(state) {
