@@ -262,7 +262,7 @@ class ResourceUI extends connect(store)(PageView) {
           conditions = `{
             name: "${searchInput.id}",
             operator: "${searchInput.getAttribute('search-oper')}",
-            value: "${searchInput.value}
+            value: "${searchInput.value}"
           }`
         } else {
           conditions = `${conditions}, {
