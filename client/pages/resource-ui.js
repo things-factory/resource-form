@@ -104,9 +104,9 @@ class ResourceUI extends connect(store)(PageView) {
         ${(this.searchFormFields || []).map(searchFormField => {
           return html`
             <input
-              name="${searchFormField.name}"
+              id="${searchFormField.name}"
               placeholder="${i18next.t(searchFormField.term)}"
-              op="${searchFormField.op}"
+              search-oper="${searchFormField.searchOper || 'eq'}"
             />
           `
         })}
@@ -143,7 +143,7 @@ class ResourceUI extends connect(store)(PageView) {
               searchRank
               sortRank
               searchEditor
-              searchOperator
+              searchOper
               searchInitVal
               gridRank
               gridEditor
@@ -242,13 +242,31 @@ class ResourceUI extends connect(store)(PageView) {
     })
     fields = fields.join()
 
-    return `
-      query {
-        ${this.resourceUrl} {
-          ${fields}
-        }
+    const queryStr = `
+    query (filter: ${this._parseSearchConditions()}){
+      ${this.resourceUrl} {
+        ${fields}
       }
-    `
+    }
+  `
+
+    return queryStr
+  }
+
+  _parseSearchConditions() {
+    const conditions = []
+    this.searchFormFields.forEach(field => {
+      const searchInput = this.searchForm.querySelector(`#${field.name}`)
+      if (searchInput.value) {
+        conditions.push({
+          name: searchInput.name,
+          operator: searchInput.getAttribute('search-oper'),
+          value: searchInput.value
+        })
+      }
+    })
+
+    return JSON.stringify(conditions)
   }
 
   stateChanged(state) {
