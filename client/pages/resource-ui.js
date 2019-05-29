@@ -243,8 +243,8 @@ class ResourceUI extends connect(store)(PageView) {
     fields = fields.join()
 
     const queryStr = `
-    query (filter: ${this._parseSearchConditions()}){
-      ${this.resourceUrl} {
+    query {
+      ${this.resourceUrl} (filters: ${this._parseSearchConditions()}) {
         ${fields}
       }
     }
@@ -254,19 +254,27 @@ class ResourceUI extends connect(store)(PageView) {
   }
 
   _parseSearchConditions() {
-    const conditions = []
-    this.searchFormFields.forEach(field => {
+    let conditions = ''
+    this.searchFormFields.map((field, index) => {
       const searchInput = this.searchForm.querySelector(`#${field.name}`)
       if (searchInput.value) {
-        conditions.push({
-          name: searchInput.name,
-          operator: searchInput.getAttribute('search-oper'),
-          value: searchInput.value
-        })
+        if (index === 0) {
+          conditions = `{
+            name: "${searchInput.id}",
+            operator: "${searchInput.getAttribute('search-oper')}",
+            value: "${searchInput.value}
+          }`
+        } else {
+          conditions = `${conditions}, {
+            name: "${searchInput.id}",
+            operator: "${searchInput.getAttribute('search-oper')}",
+            value: "${searchInput.value}"
+          }`
+        }
       }
     })
 
-    return JSON.stringify(conditions)
+    return `[${conditions}]`
   }
 
   stateChanged(state) {
