@@ -224,8 +224,8 @@ class ResourceUI extends connect(store)(PageView) {
     })
 
     this.data = {
-      items: response.data[this.resourceUrl],
-      totla: response.data[this.resourceUrl].length,
+      items: response.data[this.resourceUrl].items,
+      total: response.data[this.resourceUrl].total,
       page: this.page,
       limit: this.limit
     }
@@ -245,7 +245,10 @@ class ResourceUI extends connect(store)(PageView) {
     const queryStr = `
     query {
       ${this.resourceUrl} (filters: ${this._parseSearchConditions()}) {
-        ${fields}
+        items {
+          ${fields}
+        }
+        total
       }
     }
   `
