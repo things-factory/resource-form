@@ -36,7 +36,7 @@ class SimpleGridFooter extends LitElement {
           white-space: nowrap;
           overflow: hidden;
           background-color: var(--grid-footer-background-color, gray);
-          padding:0 2px;
+          padding: 0 2px;
 
           text-overflow: ellipsis;
           text-align: center;
@@ -69,7 +69,7 @@ class SimpleGridFooter extends LitElement {
   }
 
   _gotoPage(page) {
-    if (page > Math.ceil(this.total / this.limit) || page < 0) {
+    if (page > Math.ceil(this.total / this.limit) || page <= 0) {
       return
     }
     this.dispatchEvent(new CustomEvent('page-changed', { bubbles: true, composed: true, detail: page }))
