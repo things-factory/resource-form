@@ -244,7 +244,7 @@ class ResourceUI extends connect(store)(PageView) {
 
     const queryStr = `
     query {
-      ${this.resourceUrl} (filters: ${this._parseSearchConditions()}) {
+      ${this.resourceUrl} (filters: ${this._parseSearchConditions()}, pagination: ${this._parsePagination()}) {
         items {
           ${fields}
         }
@@ -278,6 +278,15 @@ class ResourceUI extends connect(store)(PageView) {
     })
 
     return `[${conditions}]`
+  }
+
+  _parsePagination() {
+    let pagination = `
+      skip: ${this.limit * this.page},
+      take: ${this.limit}
+    `
+
+    return `{${[pagination]}}`
   }
 
   stateChanged(state) {
