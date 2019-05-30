@@ -54,6 +54,12 @@ class ResourceUI extends connect(store)(PageView) {
     }
   }
 
+  constructor() {
+    super.constructor()
+    this.page = 1
+    this.limit = 50
+  }
+
   render() {
     return html`
       <header>${this.renderSearchForm()}</header>
@@ -282,7 +288,7 @@ class ResourceUI extends connect(store)(PageView) {
 
   _parsePagination() {
     let pagination = `
-      skip: ${this.limit * this.page},
+      skip: ${this.limit * (this.page - 1)},
       take: ${this.limit}
     `
 
