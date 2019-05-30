@@ -55,7 +55,7 @@ class ResourceUI extends connect(store)(PageView) {
   }
 
   constructor() {
-    super.constructor()
+    super()
     this.page = 1
     this.limit = 50
   }
