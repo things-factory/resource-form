@@ -148,6 +148,7 @@ class ResourceUI extends connect(store)(PageView) {
               refRelated
               searchRank
               sortRank
+              reverseSort
               searchEditor
               searchOper
               searchInitVal
@@ -184,9 +185,9 @@ class ResourceUI extends connect(store)(PageView) {
     // 3. Parse Select Fields - search form
     // this.selectFields = this._parseSelectFields(metaData.columns)
     // 4. Parse Search Form Fields - search form
-    this.searchFormFields = metaData.columns.filter(column => {
-      return column.searchRank && column.searchRank > 0
-    })
+    this.searchFormFields = metaData.columns.filter(column => column.searchRank && column.searchRank > 0)
+
+    this.sortingFields = metaData.columns.filter(column => column.sortRank && column.sortRank > 0)
     // 5. Parse Resource Form Fields - detail form
     // this.resourceFormFields = this._parseResourceFormFields(metaData.columns)
     // 6. Parse Grid Models - grid form
@@ -250,7 +251,9 @@ class ResourceUI extends connect(store)(PageView) {
 
     const queryStr = `
     query {
-      ${this.resourceUrl} (filters: ${this._parseSearchConditions()}, pagination: ${this._parsePagination()}) {
+      ${
+        this.resourceUrl
+      } (filters: ${this._parseSearchConditions()}, pagination: ${this._parsePagination()}, sortings: ${this._parseSortings()}) {
         items {
           ${fields}
         }
@@ -293,6 +296,27 @@ class ResourceUI extends connect(store)(PageView) {
     `
 
     return `{${[pagination]}}`
+  }
+
+  _parseSortings() {
+    let sortings = ''
+    if (this.sortingFields && this.sortingFields.length > 0) {
+      this.sortingFields.map((field, index) => {
+        if (index === 0) {
+          sortings = `{
+            name: "${field.name}",
+            desc: ${field.reverseSort ? field.reverseSort : false}
+          }`
+        } else {
+          sortings = `${sortings}, {
+            name: "${field.name}",
+            desc: ${field.reverseSort ? field.reverseSort : false}
+          }`
+        }
+      })
+    }
+
+    return `[${sortings}]`
   }
 
   stateChanged(state) {
