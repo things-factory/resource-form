@@ -191,7 +191,11 @@ class ResourceUI extends connect(store)(PageView) {
     // 4. Parse Search Form Fields - search form
     this.searchFormFields = metaData.columns.filter(column => column.searchRank && column.searchRank > 0)
 
-    this.sortingFields = metaData.columns.filter(column => column.sortRank && column.sortRank > 0)
+    this.sortingFields = metaData.columns
+      .filter(column => column.sortRank && column.sortRank > 0)
+      .sort((a, b) => {
+        return a.sortRank > b.sortRank ? 1 : -1
+      })
     // 5. Parse Resource Form Fields - detail form
     // this.resourceFormFields = this._parseResourceFormFields(metaData.columns)
     // 6. Parse Grid Models - grid form
@@ -347,7 +351,11 @@ class ResourceUI extends connect(store)(PageView) {
 
     if (this.active) {
       if (changed.has('_columns')) {
-        this.sortingFields = this._columns.filter(column => Number(column.sortRank) > 0)
+        this.sortingFields = this._columns
+          .filter(column => Number(column.sortRank) > 0)
+          .sort((a, b) => {
+            return a.sortRank > b.sortRank ? 1 : -1
+          })
       }
 
       if (changed.has('limit') || changed.has('page') || changed.has('_columns')) {

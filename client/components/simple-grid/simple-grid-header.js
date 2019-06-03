@@ -78,7 +78,9 @@ class SimpleGridHeader extends LitElement {
   render() {
     var sorters = this.columns
       .filter(column => column.sortRank && column.sortRank > 0)
-      .sort((a, b) => a.sortRank > b.sortRank)
+      .sort((a, b) => {
+        return a.sortRank > b.sortRank ? 1 : -1
+      })
 
     return html`
       ${this.columns.map(
