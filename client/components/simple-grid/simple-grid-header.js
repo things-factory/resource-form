@@ -24,7 +24,9 @@ class SimpleGridHeader extends LitElement {
           overflow: hidden;
         }
 
-        span {
+        div {
+          display: flex;
+
           white-space: nowrap;
           overflow: hidden;
           background-color: var(--grid-header-background-color, gray);
@@ -36,6 +38,26 @@ class SimpleGridHeader extends LitElement {
           text-align: center;
           font-size: var(--grid-header-fontsize);
           color: var(--grid-header-color, white);
+        }
+
+        span {
+          white-space: nowrap;
+          overflow: hidden;
+
+          text-align: center;
+        }
+
+        span[title] {
+          flex: 1;
+          text-overflow: ellipsis;
+          font-size: var(--grid-header-fontsize);
+          color: var(--grid-header-color, white);
+        }
+
+        span[sorter] {
+          padding: 0;
+          border: 0;
+          cursor: pointer;
         }
       `
     ]
@@ -54,15 +76,89 @@ class SimpleGridHeader extends LitElement {
   }
 
   render() {
+    var sorters = this.columns
+      .filter(column => column.sortRank && column.sortRank > 0)
+      .sort((a, b) => a.sortRank > b.sortRank)
+
     return html`
       ${this.columns.map(
-        column =>
+        (column, idx) =>
           html`
-            <span>${i18next.t(column.term)}</span>
+            <div>
+              <span title>
+                ${i18next.t(column.term)}
+              </span>
+              <span @click=${e => this._changeSort(idx)} sorter>
+                ${this._renderSortHeader(column, sorters)}
+              </span>
+            </div>
           `
       )}
-      <span></span>
+
+      <div></div>
     `
+  }
+
+  _renderSortHeader(column, sorters) {
+    if (!column.sortRank) {
+      return html`
+        &nbsp;&nbsp;
+      `
+    }
+
+    if (sorters.length > 1) {
+      var rank = sorters.indexOf(column) + 1
+      return column.reverseSort
+        ? html`
+            &#9650;<sub>${rank}</sub>
+          `
+        : html`
+            &#9660;<sub>${rank}</sub>
+          `
+    } else {
+      return column.reverseSort
+        ? html`
+            &#9650;
+          `
+        : html`
+            &#9660;
+          `
+    }
+  }
+
+  _changeSort(idx) {
+    var column = {
+      ...this.columns[idx]
+    }
+    var maxRank = 0
+
+    this.columns.forEach(column => {
+      if (column.sortRank > maxRank) {
+        maxRank = column.sortRank
+      }
+    })
+
+    if (!column.sortRank) {
+      column.sortRank = maxRank + 1
+      column.reverseSort = false
+    } else {
+      if (column.reverseSort) {
+        column.sortRank = 0
+      } else {
+        column.reverseSort = true
+      }
+    }
+
+    this.dispatchEvent(
+      new CustomEvent('sort-changed', {
+        bubbles: true,
+        composed: true,
+        detail: {
+          idx,
+          column
+        }
+      })
+    )
   }
 }
 

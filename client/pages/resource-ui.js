@@ -77,6 +77,10 @@ class ResourceUI extends connect(store)(PageView) {
               @limit-changed=${e => {
                 this.limit = e.detail
               }}
+              @sort-changed=${e => {
+                this._columns[e.detail.idx] = e.detail.column
+                this._columns = [...this._columns]
+              }}
             >
             </simple-grid>
           `
@@ -341,8 +345,14 @@ class ResourceUI extends connect(store)(PageView) {
       }
     }
 
-    if (changed.has('limit') || changed.has('page')) {
-      this._searchData()
+    if (this.active) {
+      if (changed.has('_columns')) {
+        this.sortingFields = this._columns.filter(column => Number(column.sortRank) > 0)
+      }
+
+      if (changed.has('limit') || changed.has('page') || changed.has('_columns')) {
+        this._searchData()
+      }
     }
   }
 }
