@@ -97,7 +97,7 @@ class SimpleGridHeader extends LitElement {
               <span sorter @click=${e => this._changeSort(idx)}>
                 ${this._renderSortHeader(column, sorters)}
               </span>
-              <span splitter>&nbsp; </span>
+              <span splitter draggable="true" @dragstart=${e => this._dragStart(e, idx)}>&nbsp;</span>
             </div>
           `
       )}
@@ -159,7 +159,7 @@ class SimpleGridHeader extends LitElement {
     }
 
     this.dispatchEvent(
-      new CustomEvent('sort-changed', {
+      new CustomEvent('column-changed', {
         bubbles: true,
         composed: true,
         detail: {
@@ -168,6 +168,39 @@ class SimpleGridHeader extends LitElement {
         }
       })
     )
+  }
+
+  _dragStart(e, idx) {
+    var target = e.target
+    var startX = e.offsetX
+
+    // var dragHandler = (e => {
+    // }).bind(this)
+
+    var dragEndHandler = (e => {
+      // target.removeEventListener('drag', dragHandler)
+      target.removeEventListener('dragend', dragEndHandler)
+
+      let column = {
+        ...this.columns[idx]
+      }
+
+      column.gridWidth = Math.max(0, Number(column.gridWidth) + e.offsetX - startX)
+
+      this.dispatchEvent(
+        new CustomEvent('column-changed', {
+          bubbles: true,
+          composed: true,
+          detail: {
+            idx,
+            column
+          }
+        })
+      )
+    }).bind(this)
+
+    // target.addEventListener('drag', dragHandler)
+    target.addEventListener('dragend', dragEndHandler)
   }
 }
 

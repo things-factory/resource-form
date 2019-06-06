@@ -77,7 +77,7 @@ class ResourceUI extends connect(store)(PageView) {
               @limit-changed=${e => {
                 this.limit = e.detail
               }}
-              @sort-changed=${e => {
+              @column-changed=${e => {
                 this._columns[e.detail.idx] = e.detail.column
                 this._columns = [...this._columns]
               }}
