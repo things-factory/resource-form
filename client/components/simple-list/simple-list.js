@@ -50,7 +50,9 @@ class SimpleList extends LitElement {
   updated(changes) {}
 
   render() {
-    var columns = this.columns.filter(column => column.gridWidth)
+    var columns = this.columns.filter(column => {
+      return Number(column.gridWidth) && !column.hiddenFlag
+    })
     var data = (this.data && this.data.items) || []
 
     return html`
