@@ -9,25 +9,16 @@ const KEY_TAP = 9
 const KEY_BACKSPACE = 8
 
 function calcScrollPos(parent, child) {
-  var { top: ct, left: cl, height: ch, width: cw } = child.getBoundingClientRect()
-  var { top: pt, left: pl, height: ph, width: pw } = parent.getBoundingClientRect()
+  /* getBoundingClientRect는 safari에서 스크롤 상태에서 다른 브라우저와는 다른 값을 리턴함 - 사파리는 약간 이상 작동함. */
+  var { top: ct, left: cl, right: cr, bottom: cb } = child.getBoundingClientRect()
+  var { top: pt, left: pl, right: pr, bottom: pb } = parent.getBoundingClientRect()
   var { scrollLeft, scrollTop } = parent
   var scrollbarWidth = parent.clientWidth - parent.offsetWidth
   var scrollbarHeight = parent.clientHeight - parent.offsetHeight
 
   return {
-    left:
-      cl < pl
-        ? scrollLeft - (pl - cl)
-        : cl + cw > pl + pw
-        ? scrollLeft - (pl + pw - (cl + cw)) - scrollbarWidth
-        : undefined,
-    top:
-      ct < pt
-        ? scrollTop - (pt - ct)
-        : ct + ch > pt + ph
-        ? scrollTop - (pt + ph - (ct + ch)) - scrollbarHeight
-        : undefined
+    left: cl < pl ? scrollLeft - (pl - cl) : cr > pr ? scrollLeft - (pr - cr) - scrollbarWidth : undefined,
+    top: ct < pt ? scrollTop - (pt - ct) : cb > pb ? scrollTop - (pb - cb) - scrollbarHeight : undefined
   }
 }
 
@@ -87,7 +78,7 @@ class SimpleGridBody extends LitElement {
   render() {
     var data = this.data || []
     var { row: focusedRow, column: focusedColumn } = this.focused
-    var columns = this.columns.filter(column => Number(column.gridWidth))
+    var columns = this.columns
 
     return html`
       ${data.map(
@@ -128,7 +119,7 @@ class SimpleGridBody extends LitElement {
           var keyCode = e.keyCode
           var { row, column } = this.focused
           var maxrow = this.data.length - 1
-          var maxcolumn = this.columns.filter(column => Number(column.gridWidth)).length - 1
+          var maxcolumn = this.columns.length - 1
 
           switch (keyCode) {
             case KEY_UP:

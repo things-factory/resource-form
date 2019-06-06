@@ -57,22 +57,24 @@ class SimpleGridHeader extends LitElement {
         span[sorter] {
           padding: 0;
           border: 0;
-          cursor: pointer;
+        }
+
+        span[splitter] {
+          cursor: col-resize;
         }
       `
     ]
   }
 
   _onWheelEvent(e) {
-    var delta = Math.max(-1, Math.min(1, e.wheelDelta || -e.detail))
-    var left = Math.max(0, this.scrollLeft - delta * 40)
-    this.scrollLeft = left
+    var delta = Math.max(-1, Math.min(1, e.deltaY || 0))
+    this.scrollLeft = Math.max(0, this.scrollLeft - delta * 40)
 
     e.preventDefault()
   }
 
   firstUpdated() {
-    this.addEventListener('mousewheel', this._onWheelEvent.bind(this), false)
+    this.addEventListener('wheel', this._onWheelEvent.bind(this), false)
   }
 
   render() {
@@ -82,17 +84,20 @@ class SimpleGridHeader extends LitElement {
         return a.sortRank > b.sortRank ? 1 : -1
       })
 
+    var columns = this.columns
+
     return html`
-      ${this.columns.map(
+      ${columns.map(
         (column, idx) =>
           html`
             <div>
-              <span title>
+              <span title @click=${e => this._changeSort(idx)}>
                 ${i18next.t(column.term)}
               </span>
-              <span @click=${e => this._changeSort(idx)} sorter>
+              <span sorter @click=${e => this._changeSort(idx)}>
                 ${this._renderSortHeader(column, sorters)}
               </span>
+              <span splitter>&nbsp; </span>
             </div>
           `
       )}
@@ -129,12 +134,14 @@ class SimpleGridHeader extends LitElement {
   }
 
   _changeSort(idx) {
+    var columns = this.columns
+
     var column = {
-      ...this.columns[idx]
+      ...columns[idx]
     }
     var maxRank = 0
 
-    this.columns.forEach(column => {
+    columns.forEach(column => {
       if (column.sortRank > maxRank) {
         maxRank = column.sortRank
       }
