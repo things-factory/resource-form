@@ -64,10 +64,32 @@ class ResourceUI extends connect(store)(PageView) {
     document.addEventListener('export', event => {
       if (this.getAttribute('active'))
         event.detail.callback({
-          data: this.data.items,
+          json: this._formatJson(this.data.items, this._columns),
           header: this._columns.map(c => c.term)
         })
     })
+  }
+
+  _formatJson(items, columns) {
+    let jsons = []
+    items.forEach(item => {
+      let tempObj = {}
+
+      for (let key in item) {
+        let filteredObj = columns.filter(column => {
+          return column.name === key
+        })[0]
+
+        if (filteredObj) {
+          let term = filteredObj.term || filteredObj.name
+          tempObj[term] = item[key]
+        }
+      }
+
+      jsons.push(tempObj)
+    })
+
+    return jsons
   }
 
   render() {
