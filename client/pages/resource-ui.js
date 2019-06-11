@@ -60,6 +60,10 @@ class ResourceUI extends connect(store)(PageView) {
     super()
     this.page = 1
     this.limit = 50
+
+    document.addEventListener('export', event => {
+      if (this.getAttribute('active')) event.detail.callback(this.data)
+    })
   }
 
   render() {
