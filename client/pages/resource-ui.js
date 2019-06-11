@@ -42,6 +42,8 @@ class ResourceUI extends connect(store)(PageView) {
   get context() {
     return {
       title: this.menuTitle,
+      exportable: true,
+      importable: true,
       printable: true,
       actions: (this.buttons || []).map(button => {
         return {
