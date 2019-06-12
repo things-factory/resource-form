@@ -62,11 +62,13 @@ class ResourceUI extends connect(store)(PageView) {
     this.limit = 50
 
     document.addEventListener('export', event => {
-      if (this.getAttribute('active'))
-        event.detail.callback({
-          json: this._formatJson(this.data.items, this._columns),
-          header: this._columns.map(c => c.term)
-        })
+      if (this.getAttribute('active')) {
+        event.detail.callback(
+          this.menuTitle,
+          this._columns.map(column => column.term),
+          this._formatJson(this.data.items, this._columns)
+        )
+      }
     })
   }
 
