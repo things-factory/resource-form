@@ -64,8 +64,7 @@ class ResourceUI extends connect(store)(PageView) {
     document.addEventListener('export', event => {
       if (this.getAttribute('active')) {
         event.detail.callback({
-          sheetName: this.menuTitle,
-          header: this._columns.map(column => column.term),
+          name: this.menuTitle,
           data: this._formatJson(this.data.items, this._columns)
         })
       }
