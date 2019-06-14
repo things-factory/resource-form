@@ -1,6 +1,6 @@
 {
   "name": "@things-factory/resource-ui",
-  "version": "0.1.64",
+  "version": "0.1.65",
   "main": "dist-server/index.js",
   "browser": "client/index.js",
   "things-factory": true,
@@ -25,7 +25,9 @@
   "dependencies": {
     "@things-factory/auth-provider-jwt": "*",
     "@things-factory/auth-ui-jwt": "*",
+    "@things-factory/component-ui": "*",
     "@things-factory/i18n-ui": "*",
+    "@things-factory/import-ui-csv": "*",
     "@things-factory/layout-base": "*",
     "@things-factory/menu-base": "*",
     "@things-factory/resource-base": "*",
@@ -33,7 +35,9 @@
   },
   "devDependencies": {
     "@things-factory/biz-test": "*",
-    "@things-factory/excel-ui": "*",
+    "@things-factory/export-ui-csv": "*",
+    "@things-factory/export-ui-excel": "*",
+    "@things-factory/import-ui-excel": "*",
     "@things-factory/layout-ui": "*",
     "@things-factory/menu-ui": "*",
     "@things-factory/more-ui": "*",

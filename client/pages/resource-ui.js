@@ -5,6 +5,7 @@ import { css, html } from 'lit-element'
 import { connect } from 'pwa-helpers/connect-mixin.js'
 import '../components/simple-grid/simple-grid'
 import '../components/simple-list/simple-list'
+import '@things-factory/component-ui/component/popup/pop-up'
 
 class ResourceUI extends connect(store)(PageView) {
   static get styles() {
@@ -35,7 +36,8 @@ class ResourceUI extends connect(store)(PageView) {
       page: Number,
       limit: Number,
       _columns: Array,
-      data: Array
+      data: Array,
+      importedData: Array
     }
   }
 
@@ -61,8 +63,15 @@ class ResourceUI extends connect(store)(PageView) {
     this.page = 1
     this.limit = 50
 
+    document.addEventListener('imported', event => {
+      if (this.active) {
+        this.importedData = { items: event.detail.json }
+        this.shadowRoot.querySelector('pop-up').open()
+      }
+    })
+
     document.addEventListener('export', event => {
-      if (this.getAttribute('active')) {
+      if (this.active) {
         event.detail.callback({
           name: this.menuTitle,
           data: this._formatJson(this.data.items, this._columns)
@@ -72,7 +81,7 @@ class ResourceUI extends connect(store)(PageView) {
   }
 
   _formatJson(items, columns) {
-    let jsons = []
+    let json = []
     items.forEach(item => {
       let tempObj = {}
 
@@ -87,14 +96,34 @@ class ResourceUI extends connect(store)(PageView) {
         }
       }
 
-      jsons.push(tempObj)
+      json.push(tempObj)
     })
 
-    return jsons
+    return json
   }
 
   render() {
     return html`
+      <pop-up .title="${this.menuTitle}">
+        <simple-grid
+          .columns=${this._columns}
+          .data=${this.importedData}
+          .limit=${this.limit}
+          .page=${this.page}
+          @page-changed=${e => {
+            this.page = e.detail
+          }}
+          @limit-changed=${e => {
+            this.limit = e.detail
+          }}
+          @column-changed=${e => {
+            this._columns[e.detail.idx] = e.detail.column
+            this._columns = [...this._columns]
+          }}
+        >
+        </simple-grid>
+      </pop-up>
+
       <header>${this.renderSearchForm()}</header>
 
       ${this.layout == 'WIDE'
