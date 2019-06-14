@@ -13,13 +13,7 @@ class PageActionContextBar extends connect(store)(LitElement) {
   }
 
   static get styles() {
-    return [
-      css`
-        :host {
-          margin: auto 0px auto auto;
-        }
-      `
-    ]
+    return [css``]
   }
 
   render() {
