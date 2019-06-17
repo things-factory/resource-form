@@ -32,6 +32,8 @@ class SimpleGridHeader extends LitElement {
           background-color: var(--grid-header-background-color, gray);
           border: 1px solid var(--grid-header-border-color);
           border-width: 1px 0;
+          border-left: 1px solid rgba(255, 255, 255, 0.6);
+          border-right: 1px solid rgba(0, 0, 0, 0.1);
           padding: 5px 0;
 
           text-overflow: ellipsis;
@@ -97,7 +99,7 @@ class SimpleGridHeader extends LitElement {
               <span sorter @click=${e => this._changeSort(idx)}>
                 ${this._renderSortHeader(column, sorters)}
               </span>
-              <span splitter draggable="true" @dragstart=${e => this._dragStart(e, idx)}>&nbsp;</span>
+              <span splitter draggable="true" @dragstart=${e => this._dragStart(e, idx)}></span>
             </div>
           `
       )}
@@ -108,9 +110,7 @@ class SimpleGridHeader extends LitElement {
 
   _renderSortHeader(column, sorters) {
     if (!column.sortRank) {
-      return html`
-        &nbsp;&nbsp;
-      `
+      return html``
     }
 
     if (sorters.length > 1) {
