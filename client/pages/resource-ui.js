@@ -35,6 +35,7 @@ class ResourceUI extends connect(store)(PageView) {
       baseUrl: String,
       page: Number,
       limit: Number,
+      sortingFields: Array,
       _columns: Array,
       data: Array,
       importedData: Array
@@ -44,8 +45,13 @@ class ResourceUI extends connect(store)(PageView) {
   get context() {
     return {
       title: this.menuTitle,
-      exportable: true,
-      importable: true,
+      exportable: {
+        name: this.menuTitle,
+        data: this._exportableData.bind(this)
+      },
+      importable: {
+        data: this._importData.bind(this)
+      },
       printable: true,
       actions: (this.buttons || []).map(button => {
         return {
@@ -74,32 +80,30 @@ class ResourceUI extends connect(store)(PageView) {
       if (this.active) {
         event.detail.callback({
           name: this.menuTitle,
-          data: this._formatJson(this.data.items, this._columns)
+          data: this._exportableData()
         })
       }
     })
   }
 
-  _formatJson(items, columns) {
-    let json = []
-    items.forEach(item => {
-      let tempObj = {}
+  _importData(data) {
+    this.shadowRoot.querySelector('pop-up').open()
+  }
 
-      for (let key in item) {
-        let filteredObj = columns.filter(column => {
-          return column.name === key
-        })[0]
+  _exportableData() {
+    var items = this.data && this.data.items
+    var columns = this._columns || []
 
-        if (filteredObj) {
-          let term = filteredObj.term || filteredObj.name
-          tempObj[term] = item[key]
-        }
-      }
+    if (!items || !(items instanceof Array) || items.length == 0) {
+      items = [{}]
+    }
 
-      json.push(tempObj)
+    return items.map(item => {
+      return columns.reduce((record, column) => {
+        record[column.term || column.name] = item[column.name]
+        return record
+      }, {})
     })
-
-    return json
   }
 
   render() {
@@ -116,7 +120,10 @@ class ResourceUI extends connect(store)(PageView) {
           @limit-changed=${e => {
             this.limit = e.detail
           }}
-          @column-changed=${e => {
+          @sort-changed=${e => {
+            this.sortingFields = e.detail
+          }}
+          @column-length-changed=${e => {
             this._columns[e.detail.idx] = e.detail.column
             this._columns = [...this._columns]
           }}
@@ -139,7 +146,10 @@ class ResourceUI extends connect(store)(PageView) {
               @limit-changed=${e => {
                 this.limit = e.detail
               }}
-              @column-changed=${e => {
+              @sort-changed=${e => {
+                this.sortingFields = e.detail
+              }}
+              @column-length-changed=${e => {
                 this._columns[e.detail.idx] = e.detail.column
                 this._columns = [...this._columns]
               }}
@@ -412,15 +422,15 @@ class ResourceUI extends connect(store)(PageView) {
     }
 
     if (this.active) {
-      if (changed.has('_columns')) {
-        this.sortingFields = this._columns
-          .filter(column => Number(column.sortRank) > 0)
-          .sort((a, b) => {
-            return a.sortRank > b.sortRank ? 1 : -1
-          })
-      }
+      // if (changed.has('_columns')) {
+      //   this.sortingFields = this._columns
+      //     .filter(column => Number(column.sortRank) > 0)
+      //     .sort((a, b) => {
+      //       return a.sortRank > b.sortRank ? 1 : -1
+      //     })
+      // }
 
-      if (changed.has('limit') || changed.has('page') || changed.has('_columns')) {
+      if (changed.has('limit') || changed.has('page') || changed.has('sortingFields')) {
         this._searchData()
       }
     }

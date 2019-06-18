@@ -10,7 +10,8 @@ class SimpleGridHeader extends LitElement {
 
   static get properties() {
     return {
-      columns: Array
+      columns: Array,
+      sortingFields: Array
     }
   }
 
@@ -99,7 +100,7 @@ class SimpleGridHeader extends LitElement {
               <span sorter @click=${e => this._changeSort(idx)}>
                 ${this._renderSortHeader(column, sorters)}
               </span>
-              <span splitter draggable="true" @dragstart=${e => this._dragStart(e, idx)}></span>
+              <span splitter draggable="true" @dragstart=${e => this._dragStart(e, idx)}>&nbsp;</span>
             </div>
           `
       )}
@@ -159,13 +160,14 @@ class SimpleGridHeader extends LitElement {
     }
 
     this.dispatchEvent(
-      new CustomEvent('column-changed', {
+      new CustomEvent('sort-changed', {
         bubbles: true,
         composed: true,
-        detail: {
-          idx,
-          column
-        }
+        detail: this.columns
+          .filter(column => column.sortRank && column.sortRank > 0)
+          .sort((a, b) => {
+            return a.sortRank > b.sortRank ? 1 : -1
+          })
       })
     )
   }
@@ -175,6 +177,22 @@ class SimpleGridHeader extends LitElement {
     var startX = e.offsetX
 
     // var dragHandler = (e => {
+    //   let column = {
+    //     ...this.columns[idx]
+    //   }
+
+    //   column.gridWidth = Math.max(0, Number(column.gridWidth) + e.offsetX - startX)
+
+    //   this.dispatchEvent(
+    //     new CustomEvent('column-sort-changed', {
+    //       bubbles: true,
+    //       composed: true,
+    //       detail: {
+    //         idx,
+    //         column
+    //       }
+    //     })
+    //   )
     // }).bind(this)
 
     var dragEndHandler = (e => {
@@ -188,7 +206,7 @@ class SimpleGridHeader extends LitElement {
       column.gridWidth = Math.max(0, Number(column.gridWidth) + e.offsetX - startX)
 
       this.dispatchEvent(
-        new CustomEvent('column-changed', {
+        new CustomEvent('column-length-changed', {
           bubbles: true,
           composed: true,
           detail: {
