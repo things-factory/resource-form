@@ -50,7 +50,7 @@ class ResourceUI extends connect(store)(PageView) {
         data: this._exportableData.bind(this)
       },
       importable: {
-        data: this._importData.bind(this)
+        handler: this.importHandler.bind(this)
       },
       printable: true,
       actions: (this.buttons || []).map(button => {
@@ -68,16 +68,10 @@ class ResourceUI extends connect(store)(PageView) {
     super()
     this.page = 1
     this.limit = 50
-
-    document.addEventListener('imported', event => {
-      if (this.active) {
-        this.importedData = { items: event.detail.json }
-        this.shadowRoot.querySelector('pop-up').open()
-      }
-    })
   }
 
-  _importData(data) {
+  importHandler(records) {
+    this.importedData = { items: records }
     this.shadowRoot.querySelector('pop-up').open()
   }
 
