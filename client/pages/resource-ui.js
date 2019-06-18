@@ -75,15 +75,6 @@ class ResourceUI extends connect(store)(PageView) {
         this.shadowRoot.querySelector('pop-up').open()
       }
     })
-
-    document.addEventListener('export', event => {
-      if (this.active) {
-        event.detail.callback({
-          name: this.menuTitle,
-          data: this._exportableData()
-        })
-      }
-    })
   }
 
   _importData(data) {
