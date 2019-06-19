@@ -6,6 +6,7 @@ import { connect } from 'pwa-helpers/connect-mixin.js'
 import '../components/simple-grid/simple-grid'
 import '../components/simple-list/simple-list'
 import '@things-factory/component-ui/component/popup/pop-up'
+import '@things-factory/component-ui/component/form/form-master'
 
 class ResourceUI extends connect(store)(PageView) {
   static get styles() {
@@ -56,9 +57,7 @@ class ResourceUI extends connect(store)(PageView) {
       actions: (this.buttons || []).map(button => {
         return {
           title: button.text,
-          action: function() {
-            console.log(button.text)
-          }
+          action: button.action
         }
       })
     }
@@ -116,7 +115,25 @@ class ResourceUI extends connect(store)(PageView) {
         </simple-grid>
       </pop-up>
 
-      <header>${this.renderSearchForm()}</header>
+      <header>
+        <form-master
+          id="search-form"
+          .fields="${(this.searchFormFields || []).map(field => {
+            return {
+              name: field.name,
+              type: field.searchEditor ? field.searchEditor : 'text',
+              props: {
+                min: field.rangeVal ? field.rangeVal.split(',')[0] : null,
+                max: field.rangeVal ? field.rangeVal.split(',')[1] : null,
+                searchOper: field.searchOper ? field.searchOper : 'eq',
+                placeholder: field.term
+              },
+              value: field.searchInitVal
+            }
+          })}"
+          @submit="${() => this._searchData()}"
+        ></form-master>
+      </header>
 
       ${this.layout == 'WIDE'
         ? html`
@@ -156,30 +173,6 @@ class ResourceUI extends connect(store)(PageView) {
             >
             </simple-list>
           `}
-    `
-  }
-
-  renderSearchForm() {
-    return html`
-      <form
-        id="search-form"
-        @submit="${e => {
-          e.preventDefault()
-          this._searchData()
-        }}"
-      >
-        ${(this.searchFormFields || []).map(searchFormField => {
-          return html`
-            <input
-              id="${searchFormField.name}"
-              placeholder="${i18next.t(searchFormField.term)}"
-              search-oper="${searchFormField.searchOper || 'eq'}"
-            />
-          `
-        })}
-
-        <button>Search</button>
-      </form>
     `
   }
 
@@ -238,14 +231,12 @@ class ResourceUI extends connect(store)(PageView) {
 
   _parseResourceMeta(metaData) {
     this._columns = this._sortBy('gridRank', metaData.columns)
-
-    // 1. Buttons
-    this.buttons = metaData.buttons
-    // 2. Parse Sort Fields - search form
-    // this.sortFields = this._parseSortFields(metaData.columns)
-    // 3. Parse Select Fields - search form
-    // this.selectFields = this._parseSelectFields(metaData.columns)
-    // 4. Parse Search Form Fields - search form
+    this.buttons = metaData.buttons.concat({
+      text: i18next.t('submit'),
+      action: () => {
+        this.searchForm.submit()
+      }
+    })
     this.searchFormFields = metaData.columns.filter(column => column.searchRank && column.searchRank > 0)
 
     this.sortingFields = metaData.columns
@@ -253,12 +244,6 @@ class ResourceUI extends connect(store)(PageView) {
       .sort((a, b) => {
         return a.sortRank > b.sortRank ? 1 : -1
       })
-    // 5. Parse Resource Form Fields - detail form
-    // this.resourceFormFields = this._parseResourceFormFields(metaData.columns)
-    // 6. Parse Grid Models - grid form
-    // this.gridModel = this._parseGridModel(metaData.columns)
-    // 7. Parse Grid Columns - grid form
-    // this.gridColumns = this._parseGridColumns(metaData.columns)
     this.requestUpdate()
   }
 
@@ -273,19 +258,6 @@ class ResourceUI extends connect(store)(PageView) {
     })
 
     return list
-  }
-
-  _handleBtnClick(event) {
-    this.dispatchEvent(
-      new CustomEvent(`${event.currentTarget.id}-click`, {
-        cancelable: true
-      })
-    )
-  }
-
-  _handleFormSubmit(event) {
-    event.preventDefault()
-    this._searchData()
   }
 
   async _searchData() {
@@ -332,20 +304,19 @@ class ResourceUI extends connect(store)(PageView) {
 
   _parseSearchConditions() {
     let conditions = ''
-    this.searchFormFields.map((field, index) => {
-      const searchInput = this.searchForm.querySelector(`#${field.name}`)
-      if (searchInput.value) {
+    this.searchForm.getFields().forEach((field, index) => {
+      if (field.value) {
         if (index === 0) {
           conditions = `{
-            name: "${searchInput.id}",
-            operator: "${searchInput.getAttribute('search-oper')}",
-            value: "${searchInput.value}"
+            name: "${field.name}",
+            operator: "${field.getAttribute('searchOper')}",
+            value: "${field.value}"
           }`
         } else {
           conditions = `${conditions}, {
-            name: "${searchInput.id}",
-            operator: "${searchInput.getAttribute('search-oper')}",
-            value: "${searchInput.value}"
+            name: "${field.id}",
+            operator: "${field.getAttribute('searchOper')}",
+            value: "${field.value}"
           }`
         }
       }
@@ -398,7 +369,6 @@ class ResourceUI extends connect(store)(PageView) {
       */
       if (this.active) {
         this.data = []
-        this.searchForm.reset()
 
         await this._getResourceData()
         this.updateContext()
