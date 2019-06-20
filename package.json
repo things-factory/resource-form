@@ -1,6 +1,6 @@
 {
   "name": "@things-factory/resource-ui",
-  "version": "0.1.71",
+  "version": "0.1.72",
   "main": "dist-server/index.js",
   "browser": "client/index.js",
   "things-factory": true,

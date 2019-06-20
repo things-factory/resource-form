@@ -118,19 +118,8 @@ class ResourceUI extends connect(store)(PageView) {
       <header>
         <form-master
           id="search-form"
-          .fields="${(this.searchFormFields || []).map(field => {
-            return {
-              name: field.name,
-              type: field.searchEditor ? field.searchEditor : 'text',
-              props: {
-                min: field.rangeVal ? field.rangeVal.split(',')[0] : null,
-                max: field.rangeVal ? field.rangeVal.split(',')[1] : null,
-                searchOper: field.searchOper ? field.searchOper : 'eq',
-                placeholder: field.term
-              },
-              value: field.searchInitVal
-            }
-          })}"
+          .fields="${this.searchFields}"
+          initFocus="description"
           @submit="${() => this._searchData()}"
         ></form-master>
       </header>
@@ -237,7 +226,22 @@ class ResourceUI extends connect(store)(PageView) {
         this.searchForm.submit()
       }
     })
-    this.searchFormFields = metaData.columns.filter(column => column.searchRank && column.searchRank > 0)
+
+    this.searchFields = metaData.columns
+      .filter(field => field.searchRank && field.searchRank > 0)
+      .map(field => {
+        return {
+          name: field.name,
+          type: field.searchEditor ? field.searchEditor : 'text',
+          props: {
+            min: field.rangeVal ? field.rangeVal.split(',')[0] : null,
+            max: field.rangeVal ? field.rangeVal.split(',')[1] : null,
+            searchOper: field.searchOper ? field.searchOper : 'eq',
+            placeholder: field.term
+          },
+          value: field.searchInitVal
+        }
+      })
 
     this.sortingFields = metaData.columns
       .filter(column => column.sortRank && column.sortRank > 0)
@@ -377,14 +381,6 @@ class ResourceUI extends connect(store)(PageView) {
     }
 
     if (this.active) {
-      // if (changed.has('_columns')) {
-      //   this.sortingFields = this._columns
-      //     .filter(column => Number(column.sortRank) > 0)
-      //     .sort((a, b) => {
-      //       return a.sortRank > b.sortRank ? 1 : -1
-      //     })
-      // }
-
       if (changed.has('limit') || changed.has('page') || changed.has('sortingFields')) {
         this._searchData()
       }
