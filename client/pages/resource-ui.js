@@ -53,7 +53,9 @@ class ResourceUI extends connect(store)(PageView) {
       importable: {
         handler: this.importHandler.bind(this)
       },
-      printable: true,
+      printable: {
+        accept: ['paper']
+      },
       actions: (this.buttons || []).map(button => {
         return {
           title: button.text,
