@@ -1,4 +1,3 @@
-import { i18next } from '@things-factory/i18n-base'
 import { client, PageView, ScrollbarStyles, store } from '@things-factory/shell'
 import gql from 'graphql-tag'
 import { css, html } from 'lit-element'
@@ -39,7 +38,8 @@ class ResourceUI extends connect(store)(PageView) {
       sortingFields: Array,
       _columns: Array,
       data: Array,
-      importedData: Array
+      importedData: Array,
+      _formLoaded: Boolean
     }
   }
 
@@ -122,7 +122,8 @@ class ResourceUI extends connect(store)(PageView) {
           id="search-form"
           .fields="${this.searchFields}"
           initFocus="description"
-          @submit="${() => this._searchData()}"
+          @submit="${this._searchData}"
+          @load="${this._onFormLoad}"
         ></form-master>
       </header>
 
@@ -215,19 +216,15 @@ class ResourceUI extends connect(store)(PageView) {
       `
     })
     this.menuMeta = response.data.menu
-    this.menuTitle = i18next.t(this.menuMeta.name)
+    this.menuTitle = this.menuMeta.name
     this.resourceUrl = this.menuMeta.resourceUrl
     this._parseResourceMeta(this.menuMeta)
   }
 
   _parseResourceMeta(metaData) {
     this._columns = this._sortBy('gridRank', metaData.columns)
-    this.buttons = metaData.buttons.concat({
-      text: i18next.t('submit'),
-      action: () => {
-        this.searchForm.submit()
-      }
-    })
+    // TODO: submit 테스트용도 서버에서 실행 로직을 전달 받을 수 있거나 resource-ui 가 직접 submit 가능 여부를 판단할 수 있도록 수정
+    this.buttons = metaData.buttons.concat({ text: 'submit', action: this._searchData.bind(this) })
 
     this.searchFields = metaData.columns
       .filter(field => field.searchRank && field.searchRank > 0)
@@ -250,7 +247,6 @@ class ResourceUI extends connect(store)(PageView) {
       .sort((a, b) => {
         return a.sortRank > b.sortRank ? 1 : -1
       })
-    this.requestUpdate()
   }
 
   _sortBy(key, list) {
@@ -378,15 +374,19 @@ class ResourceUI extends connect(store)(PageView) {
 
         await this._getResourceData()
         this.updateContext()
-        this._searchData()
       }
     }
 
-    if (this.active) {
+    if (this.active && this._formLoaded) {
       if (changed.has('limit') || changed.has('page') || changed.has('sortingFields')) {
         this._searchData()
       }
     }
+  }
+
+  _onFormLoad() {
+    this._formLoaded = true
+    this._searchData()
   }
 }
 
