@@ -56,7 +56,7 @@ class ResourceUI extends connect(store)(PageView) {
       printable: {
         accept: ['paper', 'preview'],
         content: () => {
-          return this.shadowRoot
+          return this
         }
       },
       actions: (this.buttons || []).map(button => {
