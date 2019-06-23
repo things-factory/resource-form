@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit-element'
 
-import '@material/mwc-icon/mwc-icon'
+import '@material/mwc-icon'
 
 class SimpleGridFooter extends LitElement {
   constructor() {
