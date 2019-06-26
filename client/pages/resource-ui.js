@@ -6,6 +6,7 @@ import '../components/simple-grid/simple-grid'
 import '../components/simple-list/simple-list'
 import '@things-factory/component-ui/component/popup/pop-up'
 import '@things-factory/component-ui/component/form/form-master'
+import '@things-factory/component-ui/component/infinite-scroll/infinite-scroll'
 
 class ResourceUI extends connect(store)(PageView) {
   static get styles() {
@@ -39,7 +40,8 @@ class ResourceUI extends connect(store)(PageView) {
       _columns: Array,
       data: Array,
       importedData: Array,
-      _formLoaded: Boolean
+      _formLoaded: Boolean,
+      pageProp: String
     }
   }
 
@@ -70,8 +72,9 @@ class ResourceUI extends connect(store)(PageView) {
 
   constructor() {
     super()
+    this.pageProp = 'page'
     this.page = 1
-    this.limit = 50
+    this.limit = 10
   }
 
   importHandler(records) {
@@ -154,19 +157,21 @@ class ResourceUI extends connect(store)(PageView) {
             </simple-grid>
           `
         : html`
-            <simple-list
-              .columns=${this._columns}
-              .data=${this.data}
-              .limit=${this.limit}
-              .page=${this.page}
-              @page-changed=${e => {
-                this.page = e.detail
-              }}
-              @limit-changed=${e => {
-                this.limit = e.detail
-              }}
-            >
-            </simple-list>
+            <infinite-scroll .pageProp="${this.pageProp}">
+              <simple-list
+                .columns=${this._columns}
+                .data=${this.data}
+                .limit=${this.limit}
+                .page=${this.page}
+                @page-changed=${e => {
+                  this.page = e.detail
+                }}
+                @limit-changed=${e => {
+                  this.limit = e.detail
+                }}
+              >
+              </simple-list>
+            </infinite-scroll>
           `}
     `
   }

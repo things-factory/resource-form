@@ -3,7 +3,6 @@ import { LitElement, html, css } from 'lit-element'
 class SimpleList extends LitElement {
   constructor() {
     super()
-
     this.columns = []
     this.data = []
   }
@@ -47,16 +46,33 @@ class SimpleList extends LitElement {
     ]
   }
 
-  updated(changes) {}
+  updated(changes) {
+    //if there are changes in page, then dispatch page-changed from simple-list
+    if (changes.has('page')) {
+      this.dispatchEvent(
+        new CustomEvent('page-changed', {
+          detail: this.page
+        })
+      )
+    }
+
+    if (changes.has('data')) {
+      if (this.data && this.data.items) {
+        this._totalData = (this._totalData || []).concat(this.data.items)
+        this.requestUpdate()
+      }
+    }
+  }
 
   render() {
-    var columns = this.columns.filter(column => {
+    if (!this.columns || this.columns.length === 0) return
+
+    const columns = this.columns.filter(column => {
       return Number(column.gridWidth) && !column.hiddenFlag
     })
-    var data = (this.data && this.data.items) || []
 
     return html`
-      ${data.map(
+      ${(this._totalData || []).map(
         record => html`
           <div class="item">
             <div class="name">${record[columns[0].name]}</div>
