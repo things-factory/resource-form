@@ -30,7 +30,7 @@ class ResourceUI extends connect(store)(PageView) {
 
   static get properties() {
     return {
-      layout: String,
+      width: String,
       resourceForm: String,
       resourceId: String,
       baseUrl: String,
@@ -133,7 +133,7 @@ class ResourceUI extends connect(store)(PageView) {
         ></form-master>
       </header>
 
-      ${this.layout == 'WIDE'
+      ${this.width == 'WIDE'
         ? html`
             <simple-grid
               .columns=${this._columns}
@@ -366,29 +366,25 @@ class ResourceUI extends connect(store)(PageView) {
   }
 
   stateChanged(state) {
-    this.layout = state.layout.width
+    this.width = state.layout.width
     this.baseUrl = state.app.baseUrl
     this.resourceId = state.route.resourceId
   }
 
   async updated(changed) {
-    if (changed.has('active')) {
-      /*
-        page가 active 상태인 경우만, updated가 호출된다.
-        따라서, 이 부분에는 active 상태가 false => true 로 된 경우에 처리할 작업을 수행한다.
-      */
-      if (this.active) {
-        this.data = []
-
-        await this._getResourceData()
-        this.updateContext()
-      }
-    }
-
-    if (this.active && this._formLoaded) {
+    if (this._formLoaded) {
       if (changed.has('limit') || changed.has('page') || changed.has('sortingFields')) {
         this._searchData()
       }
+    }
+  }
+
+  async activated(active) {
+    if (active) {
+      this.data = []
+
+      await this._getResourceData()
+      this.updateContext()
     }
   }
 
