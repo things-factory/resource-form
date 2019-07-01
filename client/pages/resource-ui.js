@@ -1,7 +1,11 @@
-import { client, PageView, ScrollbarStyles, store } from '@things-factory/shell'
-import gql from 'graphql-tag'
 import { css, html } from 'lit-element'
 import { connect } from 'pwa-helpers/connect-mixin.js'
+import gql from 'graphql-tag'
+
+import PullToRefresh from 'pulltorefreshjs'
+
+import { client, PageView, ScrollbarStyles, store } from '@things-factory/shell'
+
 import '../components/simple-grid/simple-grid'
 import '../components/simple-list/simple-list'
 import '@things-factory/component-ui/component/popup/pop-up'
@@ -9,10 +13,13 @@ import '@things-factory/component-ui/component/popup/pop-up'
 import '@things-factory/component-ui/component/form/search-form'
 import '@things-factory/component-ui/component/infinite-scroll/infinite-scroll'
 
+import { pulltorefreshStyle } from './pulltorefresh-style'
+
 class ResourceUI extends connect(store)(PageView) {
   static get styles() {
     return [
       ScrollbarStyles,
+      pulltorefreshStyle,
       css`
         :host {
           display: flex;
@@ -21,9 +28,18 @@ class ResourceUI extends connect(store)(PageView) {
           overflow: hidden;
         }
 
+        infinite-scroll {
+          flex: 1;
+
+          display: flex;
+          flex-direction: column;
+          overflow-y: auto;
+        }
+
         simple-grid,
         simple-list {
           flex: 1;
+          overflow-y: auto;
         }
       `
     ]
@@ -137,6 +153,7 @@ class ResourceUI extends connect(store)(PageView) {
       ${this.width == 'WIDE'
         ? html`
             <simple-grid
+              pulltorefresh
               .columns=${this._columns}
               .data=${this.data}
               .limit=${this.limit}
@@ -160,6 +177,7 @@ class ResourceUI extends connect(store)(PageView) {
         : html`
             <infinite-scroll .pageProp="${this.pageProp}">
               <simple-list
+                pulltorefresh
                 .columns=${this._columns}
                 .data=${this.data}
                 .limit=${this.limit}
@@ -372,7 +390,7 @@ class ResourceUI extends connect(store)(PageView) {
     this.resourceId = state.route.resourceId
   }
 
-  async updated(changed) {
+  updated(changed) {
     if (this._formLoaded) {
       if (changed.has('limit') || changed.has('page') || changed.has('sortingFields')) {
         this._searchData()
@@ -386,6 +404,28 @@ class ResourceUI extends connect(store)(PageView) {
 
       await this._getResourceData()
       this.updateContext()
+    }
+
+    if (active) {
+      await this.updateComplete
+      /*
+       * 첫번째 active 시에는 element가 생성되어있지 않으므로,
+       * 꼭 updateComplete를 기다린 후에 mainElement설정을 해야한다.
+       */
+      this._ptr = PullToRefresh.init({
+        mainElement: this.shadowRoot.querySelector('[pulltorefresh]'),
+        distIgnore: 30,
+        instructionsPullToRefresh: 'Pull down to refresh',
+        instructionsRefreshing: 'Refreshing',
+        instructionsReleaseToRefresh: 'Release to refresh',
+        onRefresh: async () => {
+          this._getResourceData()
+          this.updateContext()
+        }
+      })
+    } else {
+      this._ptr && this._ptr.destroy()
+      delete this._ptr
     }
   }
 
