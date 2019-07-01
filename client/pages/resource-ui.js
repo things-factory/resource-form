@@ -5,7 +5,8 @@ import { connect } from 'pwa-helpers/connect-mixin.js'
 import '../components/simple-grid/simple-grid'
 import '../components/simple-list/simple-list'
 import '@things-factory/component-ui/component/popup/pop-up'
-import '@things-factory/component-ui/component/form/form-master'
+// import '@things-factory/component-ui/component/form/form-master'
+import '@things-factory/component-ui/component/form/search-form'
 import '@things-factory/component-ui/component/infinite-scroll/infinite-scroll'
 
 class ResourceUI extends connect(store)(PageView) {
@@ -124,13 +125,13 @@ class ResourceUI extends connect(store)(PageView) {
       </pop-up>
 
       <header>
-        <form-master
+        <search-form
           id="search-form"
           .fields="${this.searchFields}"
           initFocus="description"
           @submit="${this._searchData}"
           @load="${this._onFormLoad}"
-        ></form-master>
+        ></search-form>
       </header>
 
       ${this.width == 'WIDE'
