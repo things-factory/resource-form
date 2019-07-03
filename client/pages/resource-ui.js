@@ -4,7 +4,7 @@ import gql from 'graphql-tag'
 
 import PullToRefresh from 'pulltorefreshjs'
 
-import { client, PageView, ScrollbarStyles, store } from '@things-factory/shell'
+import { store, client, PageView, ScrollbarStyles, PullToRefreshStyles } from '@things-factory/shell'
 
 import '../components/simple-grid/simple-grid'
 import '../components/simple-list/simple-list'
@@ -13,13 +13,11 @@ import '@things-factory/component-ui/component/popup/pop-up'
 import '@things-factory/component-ui/component/form/search-form'
 import '@things-factory/component-ui/component/infinite-scroll/infinite-scroll'
 
-import { pulltorefreshStyle } from './pulltorefresh-style'
-
 class ResourceUI extends connect(store)(PageView) {
   static get styles() {
     return [
       ScrollbarStyles,
-      pulltorefreshStyle,
+      PullToRefreshStyles,
       css`
         :host {
           display: flex;
