@@ -302,7 +302,7 @@ class ResourceUI extends connect(store)(PageView) {
   _queryBuilder() {
     let fields = []
     this._columns.forEach(c => {
-      if (c.refType === 'Entity') {
+      if (c.refType === 'Entity' || c.refType === 'Menu') {
         fields.push(`${this._underToCamel(c.name).replace('Id', '')} { id name }`)
       } else {
         fields.push(this._underToCamel(c.name))
