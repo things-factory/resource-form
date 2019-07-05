@@ -1,17 +1,14 @@
-import { css, html } from 'lit-element'
-import { connect } from 'pwa-helpers/connect-mixin.js'
-import gql from 'graphql-tag'
-
-import PullToRefresh from 'pulltorefreshjs'
-
-import { store, client, PageView, ScrollbarStyles, PullToRefreshStyles } from '@things-factory/shell'
-
-import '../components/simple-grid/simple-grid'
-import '../components/simple-list/simple-list'
-import '@things-factory/component-ui/component/popup/pop-up'
 // import '@things-factory/component-ui/component/form/form-master'
 import '@things-factory/component-ui/component/form/search-form'
 import '@things-factory/component-ui/component/infinite-scroll/infinite-scroll'
+import '@things-factory/component-ui/component/popup/pop-up'
+import { client, PageView, PullToRefreshStyles, ScrollbarStyles, store } from '@things-factory/shell'
+import gql from 'graphql-tag'
+import { css, html } from 'lit-element'
+import PullToRefresh from 'pulltorefreshjs'
+import { connect } from 'pwa-helpers/connect-mixin.js'
+import '../components/simple-grid/simple-grid'
+import '../components/simple-list/simple-list'
 
 class ResourceUI extends connect(store)(PageView) {
   static get styles() {
@@ -242,7 +239,7 @@ class ResourceUI extends connect(store)(PageView) {
     })
     this.menuMeta = response.data.menu
     this.menuTitle = this.menuMeta.name
-    this.resourceUrl = this.menuMeta.resourceUrl
+    this.resourceUrl = this._underToCamel(this.menuMeta.resourceUrl)
     this._parseResourceMeta(this.menuMeta)
   }
 
@@ -306,18 +303,17 @@ class ResourceUI extends connect(store)(PageView) {
     let fields = []
     this._columns.forEach(c => {
       if (c.refType === 'Entity') {
-        fields.push(`${c.name} { id name description }`)
+        fields.push(`${this._underToCamel(c.name).replace('Id', '')} { id name }`)
       } else {
-        fields.push(c.name)
+        fields.push(this._underToCamel(c.name))
       }
     })
     fields = fields.join()
-
     const queryStr = `
     query {
-      ${
-        this.resourceUrl
-      } (filters: ${this._parseSearchConditions()}, pagination: ${this._parsePagination()}, sortings: ${this._parseSortings()}) {
+      ${this.resourceUrl} (
+        filters: ${this._parseSearchConditions()}, pagination: ${this._parsePagination()}, sortings: ${this._parseSortings()}
+      ) {
         items {
           ${fields}
         }
@@ -327,6 +323,23 @@ class ResourceUI extends connect(store)(PageView) {
   `
 
     return queryStr
+  }
+
+  _underToCamel(str) {
+    if (str.indexOf('_') > 0) {
+      const strArr = str.split('_')
+      str = strArr
+        .map((str, idx) => {
+          if (idx > 0) {
+            str = str.replace(str[0], str[0].toUpperCase())
+          }
+
+          return str
+        })
+        .join('')
+    }
+
+    return str
   }
 
   _parseSearchConditions() {
