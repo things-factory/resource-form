@@ -2,7 +2,7 @@
 import '@things-factory/component-ui/component/form/search-form'
 import '@things-factory/component-ui/component/infinite-scroll/infinite-scroll'
 import '@things-factory/component-ui/component/popup/pop-up'
-import { client, PageView, PullToRefreshStyles, ScrollbarStyles, store } from '@things-factory/shell'
+import { client, PageView, PullToRefreshStyles, ScrollbarStyles, store, gqlBuilder } from '@things-factory/shell'
 import gql from 'graphql-tag'
 import { css, html } from 'lit-element'
 import PullToRefresh from 'pulltorefreshjs'
@@ -312,7 +312,11 @@ class ResourceUI extends connect(store)(PageView) {
     const queryStr = `
     query {
       ${this.resourceUrl} (
-        filters: ${this._parseSearchConditions()}, pagination: ${this._parsePagination()}, sortings: ${this._parseSortings()}
+        ${gqlBuilder.buildArgs({
+          filters: this._parseSearchConditions(),
+          pagination: this._parsePagination(),
+          sortings: this._parseSortings()
+        })}
       ) {
         items {
           ${fields}
@@ -343,56 +347,39 @@ class ResourceUI extends connect(store)(PageView) {
   }
 
   _parseSearchConditions() {
-    let conditions = ''
-    this.searchForm.getFields().forEach((field, index) => {
+    const conditions = []
+    this.searchForm.getFields().forEach(field => {
       if (field.value) {
-        if (index === 0) {
-          conditions = `{
-            name: "${field.name}",
-            operator: "${field.getAttribute('searchOper')}",
-            value: "${field.value}"
-          }`
-        } else {
-          conditions = `${conditions}, {
-            name: "${field.id}",
-            operator: "${field.getAttribute('searchOper')}",
-            value: "${field.value}"
-          }`
-        }
+        conditions.push({
+          name: field.name,
+          operator: field.getAttribute('searchOper'),
+          value: field.value
+        })
       }
     })
 
-    return `[${conditions}]`
+    return conditions
   }
 
   _parsePagination() {
-    let pagination = `
-      skip: ${this.limit * (this.page - 1)},
-      take: ${this.limit}
-    `
-
-    return `{${[pagination]}}`
+    return {
+      skip: this.limit * (this.page - 1),
+      take: this.limit
+    }
   }
 
   _parseSortings() {
-    let sortings = ''
+    const sortings = []
     if (this.sortingFields && this.sortingFields.length > 0) {
-      this.sortingFields.map((field, index) => {
-        if (index === 0) {
-          sortings = `{
-            name: "${field.name}",
-            desc: ${field.reverseSort ? field.reverseSort : false}
-          }`
-        } else {
-          sortings = `${sortings}, {
-            name: "${field.name}",
-            desc: ${field.reverseSort ? field.reverseSort : false}
-          }`
-        }
+      this.sortingFields.map(field => {
+        sortings.push({
+          name: field.name,
+          desc: field.reverseSort ? field.reverseSort : false
+        })
       })
     }
 
-    return `[${sortings}]`
+    return sortings
   }
 
   stateChanged(state) {
