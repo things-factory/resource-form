@@ -1,5 +1,5 @@
 import { LitElement, html, css } from 'lit-element'
-import { i18next } from '@things-factory/i18n-base'
+import '@things-factory/i18n-base'
 
 class SimpleGridHeader extends LitElement {
   constructor() {
@@ -95,7 +95,7 @@ class SimpleGridHeader extends LitElement {
           html`
             <div>
               <span title @click=${e => this._changeSort(idx)}>
-                ${i18next.t(column.term)}
+                <i18n-msg msgid=${column.term}></i18n-msg>
               </span>
               <span sorter @click=${e => this._changeSort(idx)}>
                 ${this._renderSortHeader(column, sorters)}
