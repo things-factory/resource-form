@@ -198,7 +198,7 @@ class ResourceUI extends connect(store)(PageView) {
     const response = await client.query({
       query: gql`
         query {
-          menu(id: "${this.resourceId}") {
+          menu(name: "${this.resourceId}") {
             name,
             resourceUrl,
             buttons {
