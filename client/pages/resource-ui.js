@@ -244,7 +244,7 @@ class ResourceUI extends connect(store)(PageView) {
   }
 
   _parseResourceMeta(metaData) {
-    this._columns = this._sortBy('gridRank', metaData.columns)
+    this._columns = this._sortBy('gridRank', metaData.columns.filter(column => column.gridRank > 0))
     // TODO: submit 테스트용도 서버에서 실행 로직을 전달 받을 수 있거나 resource-ui 가 직접 submit 가능 여부를 판단할 수 있도록 수정
     this.buttons = metaData.buttons.concat({ text: 'submit', action: this._searchData.bind(this) })
 
@@ -373,7 +373,7 @@ class ResourceUI extends connect(store)(PageView) {
     if (this.sortingFields && this.sortingFields.length > 0) {
       this.sortingFields.map(field => {
         sortings.push({
-          name: field.name,
+          name: this._underToCamel(field.name),
           desc: field.reverseSort ? field.reverseSort : false
         })
       })
