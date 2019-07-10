@@ -1,15 +1,14 @@
-// import '@things-factory/component-ui/component/form/form-master'
-import '@things-factory/component-ui/component/form/search-form'
 import '@things-factory/component-ui/component/infinite-scroll/infinite-scroll'
 import '@things-factory/component-ui/component/popup/pop-up'
-import { client, PageView, PullToRefreshStyles, ScrollbarStyles, store, gqlBuilder } from '@things-factory/shell'
+import '@things-factory/form-ui'
+import { i18next } from '@things-factory/i18n-base'
+import { client, gqlBuilder, PageView, PullToRefreshStyles, ScrollbarStyles, store } from '@things-factory/shell'
 import gql from 'graphql-tag'
 import { css, html } from 'lit-element'
 import PullToRefresh from 'pulltorefreshjs'
 import { connect } from 'pwa-helpers/connect-mixin.js'
 import '../components/simple-grid/simple-grid'
 import '../components/simple-list/simple-list'
-import { i18next } from '@things-factory/i18n-base'
 
 class ResourceUI extends connect(store)(PageView) {
   static get styles() {
