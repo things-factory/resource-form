@@ -9,6 +9,7 @@ import PullToRefresh from 'pulltorefreshjs'
 import { connect } from 'pwa-helpers/connect-mixin.js'
 import '../components/simple-grid/simple-grid'
 import '../components/simple-list/simple-list'
+import { i18next } from '@things-factory/i18n-base'
 
 class ResourceUI extends connect(store)(PageView) {
   static get styles() {
@@ -258,7 +259,7 @@ class ResourceUI extends connect(store)(PageView) {
             min: field.rangeVal ? field.rangeVal.split(',')[0] : null,
             max: field.rangeVal ? field.rangeVal.split(',')[1] : null,
             searchOper: field.searchOper ? field.searchOper : 'eq',
-            placeholder: field.term
+            placeholder: i18next.t(field.term)
           },
           value: field.searchInitVal
         }
