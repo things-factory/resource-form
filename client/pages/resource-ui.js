@@ -7,8 +7,7 @@ import gql from 'graphql-tag'
 import { css, html } from 'lit-element'
 import PullToRefresh from 'pulltorefreshjs'
 import { connect } from 'pwa-helpers/connect-mixin.js'
-import '../components/simple-grid/simple-grid'
-import '../components/simple-list/simple-list'
+import '@things-factory/simple-ui'
 
 class ResourceUI extends connect(store)(PageView) {
   static get styles() {
@@ -50,7 +49,8 @@ class ResourceUI extends connect(store)(PageView) {
       limit: Number,
       sortingFields: Array,
       _columns: Array,
-      data: Array,
+      items: Array,
+      total: Number,
       importedData: Array,
       _formLoaded: Boolean,
       pageProp: String
@@ -85,25 +85,26 @@ class ResourceUI extends connect(store)(PageView) {
   constructor() {
     super()
     this.pageProp = 'page'
+    this.items = []
+    this.total = 0
+    this.importedData = []
     this.page = 1
     this.limit = 10
   }
 
   importHandler(records) {
-    this.importedData = { items: records }
+    debugger
+    this.importedData = records
     this.shadowRoot.querySelector('pop-up').open()
   }
 
   _exportableData() {
-    var items = this.data && this.data.items
-    var columns = this._columns || []
-
-    if (!items || !(items instanceof Array) || items.length == 0) {
-      items = [{}]
+    if (!this.items || !(this.items instanceof Array) || this.items.length == 0) {
+      this.items = [{}]
     }
 
-    return items.map(item => {
-      return columns.reduce((record, column) => {
+    return this.items.map(item => {
+      return this._columns.reduce((record, column) => {
         record[column.term || column.name] = item[column.name]
         return record
       }, {})
@@ -115,7 +116,8 @@ class ResourceUI extends connect(store)(PageView) {
       <pop-up .title="${this.menuTitle}">
         <simple-grid
           .columns=${this._columns}
-          .data=${this.importedData}
+          .items=${this.importedData}
+          .total=${this.importedData.length}
           .limit=${this.limit}
           .page=${this.page}
           @page-changed=${e => {
@@ -150,7 +152,8 @@ class ResourceUI extends connect(store)(PageView) {
             <simple-grid
               pulltorefresh
               .columns=${this._columns}
-              .data=${this.data}
+              .items=${this.items}
+              .total=${this.total}
               .limit=${this.limit}
               .page=${this.page}
               @page-changed=${e => {
@@ -174,7 +177,7 @@ class ResourceUI extends connect(store)(PageView) {
               <simple-list
                 pulltorefresh
                 .columns=${this._columns}
-                .data=${this.data}
+                .items=${this.items}
                 .limit=${this.limit}
                 .page=${this.page}
                 @page-changed=${e => {
@@ -291,12 +294,8 @@ class ResourceUI extends connect(store)(PageView) {
       `
     })
 
-    this.data = {
-      items: response.data[this.resourceUrl].items,
-      total: response.data[this.resourceUrl].total,
-      page: this.page,
-      limit: this.limit
-    }
+    this.items = response.data[this.resourceUrl].items
+    this.total = response.data[this.resourceUrl].total
   }
 
   _queryBuilder() {
