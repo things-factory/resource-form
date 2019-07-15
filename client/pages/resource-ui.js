@@ -1,14 +1,17 @@
-import '@things-factory/component-ui/component/infinite-scroll/infinite-scroll'
-import '@things-factory/component-ui/component/popup/pop-up'
-import '@things-factory/form-ui'
-import { i18next } from '@things-factory/i18n-base'
-import { client, gqlBuilder, PageView, PullToRefreshStyles, ScrollbarStyles, store } from '@things-factory/shell'
-import gql from 'graphql-tag'
 import { css, html } from 'lit-element'
-import PullToRefresh from 'pulltorefreshjs'
 import { connect } from 'pwa-helpers/connect-mixin.js'
-import '@things-factory/simple-ui'
+import gql from 'graphql-tag'
 
+import PullToRefresh from 'pulltorefreshjs'
+
+import { client, gqlBuilder, PageView, PullToRefreshStyles, ScrollbarStyles, store } from '@things-factory/shell'
+import { i18next } from '@things-factory/i18n-base'
+import '@things-factory/form-ui'
+import '@things-factory/component-ui/component/popup/pop-up'
+
+import '../components/data-list-wrapper'
+
+/* 다국어 언어 변화에 대한 대응이 필요함 */
 class ResourceUI extends connect(store)(PageView) {
   static get styles() {
     return [
@@ -22,16 +25,7 @@ class ResourceUI extends connect(store)(PageView) {
           overflow: hidden;
         }
 
-        infinite-scroll {
-          flex: 1;
-
-          display: flex;
-          flex-direction: column;
-          overflow-y: auto;
-        }
-
-        simple-grid,
-        simple-list {
+        data-list-wrapper {
           flex: 1;
           overflow-y: auto;
         }
@@ -89,7 +83,7 @@ class ResourceUI extends connect(store)(PageView) {
     this.total = 0
     this.importedData = []
     this.page = 1
-    this.limit = 10
+    this.limit = 20
   }
 
   importHandler(records) {
@@ -114,27 +108,15 @@ class ResourceUI extends connect(store)(PageView) {
   render() {
     return html`
       <pop-up .title="${this.menuTitle}">
-        <simple-grid
+        <data-list-wrapper
+          .mode="WIDE"
           .columns=${this._columns}
           .items=${this.importedData}
           .total=${this.importedData.length}
           .limit=${this.limit}
           .page=${this.page}
-          @page-changed=${e => {
-            this.page = e.detail
-          }}
-          @limit-changed=${e => {
-            this.limit = e.detail
-          }}
-          @sort-changed=${e => {
-            this.sortingFields = e.detail
-          }}
-          @column-length-changed=${e => {
-            this._columns[e.detail.idx] = e.detail.column
-            this._columns = [...this._columns]
-          }}
         >
-        </simple-grid>
+        </data-list-wrapper>
       </pop-up>
 
       <header>
@@ -147,49 +129,25 @@ class ResourceUI extends connect(store)(PageView) {
         ></search-form>
       </header>
 
-      ${this.width == 'WIDE'
-        ? html`
-            <simple-grid
-              pulltorefresh
-              .columns=${this._columns}
-              .items=${this.items}
-              .total=${this.total}
-              .limit=${this.limit}
-              .page=${this.page}
-              @page-changed=${e => {
-                this.page = e.detail
-              }}
-              @limit-changed=${e => {
-                this.limit = e.detail
-              }}
-              @sort-changed=${e => {
-                this.sortingFields = e.detail
-              }}
-              @column-length-changed=${e => {
-                this._columns[e.detail.idx] = e.detail.column
-                this._columns = [...this._columns]
-              }}
-            >
-            </simple-grid>
-          `
-        : html`
-            <infinite-scroll .pageProp="${this.pageProp}">
-              <simple-list
-                pulltorefresh
-                .columns=${this._columns}
-                .items=${this.items}
-                .limit=${this.limit}
-                .page=${this.page}
-                @page-changed=${e => {
-                  this.page = e.detail
-                }}
-                @limit-changed=${e => {
-                  this.limit = e.detail
-                }}
-              >
-              </simple-list>
-            </infinite-scroll>
-          `}
+      <data-list-wrapper
+        pulltorefresh
+        .mode=${this.width}
+        .columns=${this._columns}
+        .records=${this.items}
+        .total=${this.total}
+        .limit=${this.limit}
+        .page=${this.page}
+        @page-changed=${e => {
+          this.page = e.detail
+        }}
+        @limit-changed=${e => {
+          this.limit = e.detail
+        }}
+        @sorters-changed=${e => {
+          this.sortingFields = e.detail
+        }}
+      >
+      </data-list-wrapper>
     `
   }
 
@@ -198,6 +156,8 @@ class ResourceUI extends connect(store)(PageView) {
   }
 
   async _getResourceData() {
+    this.columns = []
+
     const response = await client.query({
       query: gql`
         query {
@@ -240,14 +200,24 @@ class ResourceUI extends connect(store)(PageView) {
         }
       `
     })
+
     this.menuMeta = response.data.menu
     this.menuTitle = this.menuMeta.name
     this.resourceUrl = this._underToCamel(this.menuMeta.resourceUrl)
+
     this._parseResourceMeta(this.menuMeta)
+
+    /* page context를 update해주어야 한다. */
+    this.updateContext()
   }
 
   _parseResourceMeta(metaData) {
-    this._columns = this._sortBy('gridRank', metaData.columns.filter(column => column.gridRank > 0))
+    this._columns = metaData.columns
+      .filter(column => column.gridRank > 0)
+      .sort((a, b) => {
+        return a['gridRank'] > b['gridRank'] ? 1 : -1
+      })
+
     // TODO: submit 테스트용도 서버에서 실행 로직을 전달 받을 수 있거나 resource-ui 가 직접 submit 가능 여부를 판단할 수 있도록 수정
     this.buttons = metaData.buttons.concat({ text: 'submit', action: this._searchData.bind(this) })
 
@@ -274,20 +244,9 @@ class ResourceUI extends connect(store)(PageView) {
       })
   }
 
-  _sortBy(key, list) {
-    list.sort((a, b) => {
-      if (a[key] < b[key]) {
-        return -1
-      } else if (a[key] > b[key]) {
-        return 1
-      }
-      return 0
-    })
-
-    return list
-  }
-
   async _searchData() {
+    this.items = []
+
     const response = await client.query({
       query: gql`
         ${this._queryBuilder()}
@@ -300,7 +259,7 @@ class ResourceUI extends connect(store)(PageView) {
 
   _queryBuilder() {
     let fields = []
-    this._columns.forEach(c => {
+    ;(this._columns || []).forEach(c => {
       if (c.refType === 'Entity' || c.refType === 'Menu') {
         fields.push(`${this._underToCamel(c.name).replace('Id', '')} { id name }`)
       } else {
@@ -347,6 +306,7 @@ class ResourceUI extends connect(store)(PageView) {
 
   _parseSearchConditions() {
     const conditions = []
+
     this.searchForm.getFields().forEach(field => {
       if (field.value) {
         conditions.push({
@@ -387,22 +347,20 @@ class ResourceUI extends connect(store)(PageView) {
     this.resourceId = state.route.resourceId
   }
 
-  updated(changed) {
-    if (this._formLoaded) {
-      if (changed.has('limit') || changed.has('page') || changed.has('sortingFields')) {
-        this._searchData()
-      }
+  async updated(changed) {
+    if (changed.has('resourceId')) {
+      this._getResourceData()
+
+      /* 새로운 searchForm이 만들어지는 경우에는, _searchData() 전에 form load가 완료될 수 있도록 시간을 제공함 */
+      await this.updateComplete
+    }
+
+    if (changed.has('limit') || changed.has('page') || changed.has('sortingFields')) {
+      this._searchData()
     }
   }
 
   async activated(active) {
-    if (active) {
-      this.data = []
-
-      await this._getResourceData()
-      this.updateContext()
-    }
-
     if (active) {
       await this.updateComplete
       /*
@@ -415,9 +373,8 @@ class ResourceUI extends connect(store)(PageView) {
         instructionsPullToRefresh: 'Pull down to refresh',
         instructionsRefreshing: 'Refreshing',
         instructionsReleaseToRefresh: 'Release to refresh',
-        onRefresh: async () => {
+        onRefresh: () => {
           this._getResourceData()
-          this.updateContext()
         }
       })
     } else {
@@ -427,7 +384,6 @@ class ResourceUI extends connect(store)(PageView) {
   }
 
   _onFormLoad() {
-    this._formLoaded = true
     this._searchData()
   }
 }
