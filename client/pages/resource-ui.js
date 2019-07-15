@@ -11,7 +11,6 @@ import '@things-factory/component-ui/component/popup/pop-up'
 
 import '../components/data-list-wrapper'
 
-/* 다국어 언어 변화에 대한 대응이 필요함 */
 class ResourceUI extends connect(store)(PageView) {
   static get styles() {
     return [
@@ -78,12 +77,25 @@ class ResourceUI extends connect(store)(PageView) {
 
   constructor() {
     super()
+
     this.pageProp = 'page'
     this.items = []
     this.total = 0
     this.importedData = []
     this.page = 1
-    this.limit = 20
+    this.limit = 50
+  }
+
+  firstUpdated() {
+    /*
+     * TODO 다국어 언어 변화에 대한 대응으로 적절한 지 확인해야함.
+     * 다국어 파일이 로드되기 전에 i18next.t(field.term) 이 동작한다면 다국어 동작이 완료되지 않을 수 있음.
+     * 따라서, 새로운 다국어 파일이 로드된 후 _parseResourceMeta() 를 재실행 함.
+     */
+    i18next.store.on('added', (lng, ns) => {
+      console.trace('이 메시지 발생 시 꼭 확인되어야 함.')
+      this._parseResourceMeta()
+    })
   }
 
   importHandler(records) {
@@ -205,15 +217,21 @@ class ResourceUI extends connect(store)(PageView) {
     this.menuTitle = this.menuMeta.name
     this.resourceUrl = this._underToCamel(this.menuMeta.resourceUrl)
 
-    this._parseResourceMeta(this.menuMeta)
+    this._parseResourceMeta()
 
     /* page context를 update해주어야 한다. */
     this.updateContext()
   }
 
-  _parseResourceMeta(metaData) {
+  _parseResourceMeta() {
+    var metaData = this.menuMeta
+
     this._columns = metaData.columns
       .filter(column => column.gridRank > 0)
+      .map(column => {
+        column.term = i18next.t(column.term)
+        return column
+      })
       .sort((a, b) => {
         return a['gridRank'] > b['gridRank'] ? 1 : -1
       })
@@ -231,7 +249,7 @@ class ResourceUI extends connect(store)(PageView) {
             min: field.rangeVal ? field.rangeVal.split(',')[0] : null,
             max: field.rangeVal ? field.rangeVal.split(',')[1] : null,
             searchOper: field.searchOper ? field.searchOper : 'eq',
-            placeholder: i18next.t(field.term)
+            placeholder: field.term
           },
           value: field.searchInitVal
         }
@@ -258,15 +276,18 @@ class ResourceUI extends connect(store)(PageView) {
   }
 
   _queryBuilder() {
-    let fields = []
-    ;(this._columns || []).forEach(c => {
-      if (c.refType === 'Entity' || c.refType === 'Menu') {
-        fields.push(`${this._underToCamel(c.name).replace('Id', '')} { id name }`)
-      } else {
-        fields.push(this._underToCamel(c.name))
-      }
-    })
-    fields = fields.join()
+    /* column 정보가 없는 경우 systax 오류를 방지하기 위해, '임시로' id를 제공함. */
+    var fields =
+      this._columns && this._columns.length > 0
+        ? this._columns
+            .map(column => {
+              return column.refType == 'Entity' || column.refType == 'Menu'
+                ? `${this._underToCamel(column.name).replace('Id', '')} { id name }`
+                : this._underToCamel(column.name)
+            })
+            .join()
+        : 'id'
+
     const queryStr = `
     query {
       ${this.resourceUrl} (
@@ -349,10 +370,11 @@ class ResourceUI extends connect(store)(PageView) {
 
   async updated(changed) {
     if (changed.has('resourceId')) {
-      this._getResourceData()
-
-      /* 새로운 searchForm이 만들어지는 경우에는, _searchData() 전에 form load가 완료될 수 있도록 시간을 제공함 */
-      await this.updateComplete
+      /*
+       * 새로운 searchForm이 만들어지는 경우에는,
+       * _searchData() 전에 새로운 meta정보를 가져온 것을 보장하기 위해서 await를 사용한다.
+       */
+      await this._getResourceData()
     }
 
     if (changed.has('limit') || changed.has('page') || changed.has('sortingFields')) {
