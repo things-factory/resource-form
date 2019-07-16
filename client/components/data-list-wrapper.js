@@ -30,7 +30,7 @@ export class DataListWrapper extends LitElement {
         flex-direction: row;
       }
 
-      data-glister {
+      data-grist {
         flex: 1;
         overflow-y: auto;
       }
@@ -52,13 +52,13 @@ export class DataListWrapper extends LitElement {
 
   render() {
     return html`
-      <data-glister
+      <data-grist
         .mode=${this.mode}
         .config=${this._config}
         .data=${this._data}
         @sorters-changed=${this.onSortersChanged.bind(this)}
       >
-      </data-glister>
+      </data-grist>
     `
   }
 
