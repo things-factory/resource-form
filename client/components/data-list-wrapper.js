@@ -1,7 +1,6 @@
 import { LitElement, html, css } from 'lit-element'
 
 import '@things-factory/simple-ui'
-import '@things-factory/component-ui/component/infinite-scroll/infinite-scroll'
 
 const GUTTERS = [
   {
@@ -29,14 +28,6 @@ export class DataListWrapper extends LitElement {
       :host {
         display: flex;
         flex-direction: row;
-      }
-
-      infinite-scroll {
-        flex: 1;
-
-        display: flex;
-        flex-direction: column;
-        overflow-y: auto;
       }
 
       data-grid,
@@ -68,9 +59,7 @@ export class DataListWrapper extends LitElement {
             </data-grid>
           `
         : html`
-            <infinite-scroll .pageProp="page">
-              <data-list .config=${this._config} .data=${this._data} .page=${this.page}> </data-list>
-            </infinite-scroll>
+            <data-list .config=${this._config} .data=${this._data} .page=${this.page}> </data-list>
           `}
     `
   }
@@ -131,6 +120,7 @@ export class DataListWrapper extends LitElement {
 
   updated(changes) {
     if (changes.has('columns')) {
+      this.records = []
       this._config = this.buildConfig()
     }
 

@@ -83,7 +83,7 @@ class ResourceUI extends connect(store)(PageView) {
     this.total = 0
     this.importedData = []
     this.page = 1
-    this.limit = 50
+    this.limit = 20
   }
 
   firstUpdated() {
@@ -137,7 +137,6 @@ class ResourceUI extends connect(store)(PageView) {
           .fields="${this.searchFields}"
           initFocus="description"
           @submit="${this._searchData}"
-          @load="${this._onFormLoad}"
         ></search-form>
       </header>
 
@@ -157,6 +156,7 @@ class ResourceUI extends connect(store)(PageView) {
         }}
         @sorters-changed=${e => {
           this.sortingFields = e.detail
+          this._searchData()
         }}
       >
       </data-list-wrapper>
@@ -221,6 +221,13 @@ class ResourceUI extends connect(store)(PageView) {
 
     /* page context를 update해주어야 한다. */
     this.updateContext()
+
+    /* parsing이 완료된 후에 page를 변경한다. 페이지 변경에 의해 searchData()가 실행되어야 한다. */
+    if (this.page == 1) {
+      this._searchData()
+    } else {
+      this.page = 1
+    }
   }
 
   _parseResourceMeta() {
@@ -377,7 +384,7 @@ class ResourceUI extends connect(store)(PageView) {
       await this._getResourceData()
     }
 
-    if (changed.has('limit') || changed.has('page') || changed.has('sortingFields')) {
+    if (changed.has('limit') || changed.has('page')) {
       this._searchData()
     }
   }
@@ -403,10 +410,6 @@ class ResourceUI extends connect(store)(PageView) {
       this._ptr && this._ptr.destroy()
       delete this._ptr
     }
-  }
-
-  _onFormLoad() {
-    this._searchData()
   }
 }
 
