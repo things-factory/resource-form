@@ -4,7 +4,15 @@ import gql from 'graphql-tag'
 
 import PullToRefresh from 'pulltorefreshjs'
 
-import { client, gqlBuilder, PageView, PullToRefreshStyles, ScrollbarStyles, store } from '@things-factory/shell'
+import {
+  client,
+  gqlBuilder,
+  PageView,
+  PullToRefreshStyles,
+  ScrollbarStyles,
+  store,
+  isMobileDevice
+} from '@things-factory/shell'
 import { i18next } from '@things-factory/i18n-base'
 import '@things-factory/form-ui'
 import '@things-factory/component-ui/component/popup/pop-up'
@@ -34,7 +42,6 @@ class ResourceUI extends connect(store)(PageView) {
 
   static get properties() {
     return {
-      width: String,
       resourceForm: String,
       resourceId: String,
       baseUrl: String,
@@ -142,7 +149,7 @@ class ResourceUI extends connect(store)(PageView) {
 
       <data-list-wrapper
         pulltorefresh
-        .mode=${this.width}
+        .mode=${isMobileDevice() ? 'LIST' : 'GRID'}
         .columns=${this._columns}
         .records=${this.items}
         .total=${this.total}
@@ -370,7 +377,6 @@ class ResourceUI extends connect(store)(PageView) {
   }
 
   stateChanged(state) {
-    this.width = state.layout.width
     this.baseUrl = state.app.baseUrl
     this.resourceId = state.route.resourceId
   }
