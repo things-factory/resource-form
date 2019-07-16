@@ -12,10 +12,6 @@ class PageActionContextBar extends connect(store)(LitElement) {
     }
   }
 
-  static get styles() {
-    return [css``]
-  }
-
   render() {
     return html`
       ${this._actions.map(
