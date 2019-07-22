@@ -286,8 +286,8 @@ class ResourceUI extends connect(store)(PageView) {
       `
     })
 
-    this.items = response.data[this.resourceUrl].items
-    this.total = response.data[this.resourceUrl].total
+    this.items = response.data.response.items || []
+    this.total = response.data.response.total || 0
   }
 
   _queryBuilder() {
@@ -305,7 +305,7 @@ class ResourceUI extends connect(store)(PageView) {
 
     const queryStr = `
     query {
-      ${this.resourceUrl} (
+      response: ${this.resourceUrl} (
         ${gqlBuilder.buildArgs({
           filters: this._parseSearchConditions(),
           pagination: this._parsePagination(),
@@ -358,8 +358,8 @@ class ResourceUI extends connect(store)(PageView) {
 
   _parsePagination() {
     return {
-      skip: this.limit * (this.page - 1),
-      take: this.limit
+      limit: this.limit,
+      page: this.page
     }
   }
 
