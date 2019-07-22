@@ -255,6 +255,7 @@ class ResourceUI extends connect(store)(PageView) {
 
     this.searchFields = metaData.columns
       .filter(field => field.searchRank && field.searchRank > 0)
+      .sort((a, b) => (a['searchRank'] > b['searchRank'] ? 1 : -1))
       .map(field => {
         return {
           name: field.name,
