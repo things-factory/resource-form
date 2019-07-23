@@ -348,7 +348,8 @@ class ResourceUI extends connect(store)(PageView) {
         conditions.push({
           name: field.name,
           operator: field.getAttribute('searchOper'),
-          value: field.value
+          value: field.value,
+          dataType: this._columns.find(c => c.name === field.name).colType
         })
       }
     })
