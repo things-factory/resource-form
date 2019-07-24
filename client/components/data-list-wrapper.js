@@ -83,9 +83,15 @@ export class DataListWrapper extends LitElement {
   buildConfig() {
     var columns = this.columns.map(column => {
       let { name, gridWidth: width, gridAlign: align, term: header } = column
+      let refType = column.refType && column.refType.toLowerCase()
+      let type = column.colType
+      if ((refType && refType === 'entity') || refType === 'menu') {
+        type = 'object'
+      }
+
       return {
         name,
-        type: 'string',
+        type,
         hidden: false,
         width,
         resizable: true,

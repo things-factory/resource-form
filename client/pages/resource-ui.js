@@ -297,7 +297,7 @@ class ResourceUI extends connect(store)(PageView) {
         ? this._columns
             .map(column => {
               return column.refType == 'Entity' || column.refType == 'Menu'
-                ? `${this._underToCamel(column.name).replace('Id', '')} { id name }`
+                ? `${this._underToCamel(column.name).replace('Id', '')} { id name description }`
                 : this._underToCamel(column.name)
             })
             .join()
