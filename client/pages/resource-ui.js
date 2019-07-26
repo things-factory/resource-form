@@ -35,8 +35,6 @@ class ResourceUI extends connect(store)(PageView) {
         data-list-wrapper {
           flex: 1;
           overflow-y: auto;
-          background-color: var(--data-list-wrapper-background-color);
-          padding: var(--data-list-wrapper-padding);
         }
       `
     ]
