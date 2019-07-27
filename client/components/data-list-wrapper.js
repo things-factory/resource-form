@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit-element'
 
-import '@things-factory/simple-ui'
+import '@things-factory/grist-ui'
 
 const GUTTERS = [
   {
