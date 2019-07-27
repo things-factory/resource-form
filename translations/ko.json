@@ -1,5 +1,6 @@
 {
   "button.save": "저장",
+  "button.cancel": "취소",
   "button.export": "내보내기",
   "button.import": "가져오기",
   "button.submit": "제출",

@@ -20,4 +20,10 @@ export default function bootstrap() {
       context: 'actions'
     }
   })
+
+  import('@things-factory/grist-ui').then(grist => {
+    import('./data-grist/editors/object-editor').then(editor => {
+      grist.registerEditor('object', editor.ObjectEditor)
+    })
+  })
 }

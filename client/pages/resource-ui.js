@@ -17,7 +17,7 @@ import { i18next } from '@things-factory/i18n-base'
 import '@things-factory/form-ui'
 import '@things-factory/component-ui/component/popup/pop-up'
 
-import '../components/data-list-wrapper'
+import '../data-grist/wrapper/data-list-wrapper'
 
 class ResourceUI extends connect(store)(PageView) {
   static get styles() {

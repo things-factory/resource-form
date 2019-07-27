@@ -1,5 +1,6 @@
 {
   "button.save": "save",
+  "button.cancel": "cancel",
   "button.export": "export",
   "button.import": "import",
   "button.submit": "submit",
