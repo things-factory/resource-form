@@ -241,6 +241,10 @@ class ResourceUI extends connect(store)(PageView) {
   }
 
   _parseResourceMeta() {
+    if (!this.menuMeta) {
+      return
+    }
+
     var metaData = this.menuMeta
 
     this._columns = metaData.columns
