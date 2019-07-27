@@ -22,6 +22,11 @@ const PAGINATION = {
   pages: [20, 30, 50, 100, 200]
 }
 
+/**
+ * @class DataListWrapper
+ *
+ * resource entity의 configuration을 의 불일치를 data-grist의 configuration으로 치환하는 클래스임.
+ */
 export class DataListWrapper extends LitElement {
   static get styles() {
     return css`
@@ -32,7 +37,6 @@ export class DataListWrapper extends LitElement {
 
       data-grist {
         flex: 1;
-        overflow-y: auto;
       }
     `
   }

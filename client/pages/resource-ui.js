@@ -32,9 +32,14 @@ class ResourceUI extends connect(store)(PageView) {
           overflow: hidden;
         }
 
+        search-form {
+          overflow: visible;
+        }
+
         data-list-wrapper {
           flex: 1;
-          overflow-y: auto;
+
+          overflow: hidden;
         }
       `
     ]
@@ -138,14 +143,12 @@ class ResourceUI extends connect(store)(PageView) {
         </data-list-wrapper>
       </pop-up>
 
-      <header>
-        <search-form
-          id="search-form"
-          .fields="${this.searchFields}"
-          initFocus="description"
-          @submit="${this._searchData}"
-        ></search-form>
-      </header>
+      <search-form
+        id="search-form"
+        .fields="${this.searchFields}"
+        initFocus="description"
+        @submit="${this._searchData}"
+      ></search-form>
 
       <data-list-wrapper
         pulltorefresh
