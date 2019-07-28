@@ -22,6 +22,9 @@ export default function bootstrap() {
   })
 
   import('@things-factory/grist-ui').then(grist => {
+    import('./data-grist/renderers/object-renderer').then(renderer => {
+      grist.registerRenderer('object', renderer.ObjectRenderer)
+    })
     import('./data-grist/editors/object-editor').then(editor => {
       grist.registerEditor('object', editor.ObjectEditor)
     })
