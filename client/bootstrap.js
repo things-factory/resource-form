@@ -6,8 +6,17 @@ import { addRoutingType } from '@things-factory/menu-base'
 import { TOOL_POSITION } from '@things-factory/layout-base'
 import { APPEND_CONTEXT_TOOL } from '@things-factory/context-base'
 
+import { registerEditor, registerRenderer } from '@things-factory/grist-ui'
+
+import { ObjectRenderer } from './data-grist/renderers/object-renderer'
+import { ObjectEditor } from './data-grist/editors/object-editor'
+
+import './components/page-action-context-bar'
+
 export default function bootstrap() {
-  import('./components/page-action-context-bar')
+  registerRenderer('object', ObjectRenderer)
+  registerEditor('object', ObjectEditor)
+
   store.dispatch(addRoutingType('RESOURCE', 'resource'))
 
   store.dispatch({
@@ -19,14 +28,5 @@ export default function bootstrap() {
       position: TOOL_POSITION.REAR_END,
       context: 'actions'
     }
-  })
-
-  import('@things-factory/grist-ui').then(grist => {
-    import('./data-grist/renderers/object-renderer').then(renderer => {
-      grist.registerRenderer('object', renderer.ObjectRenderer)
-    })
-    import('./data-grist/editors/object-editor').then(editor => {
-      grist.registerEditor('object', editor.ObjectEditor)
-    })
   })
 }
