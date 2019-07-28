@@ -52,26 +52,16 @@ export class ObjectEditor extends LitElement {
   }
 
   render() {
-    var { idField = 'id', nameField = 'name', descriptionField = 'description' } = this.column.record.options || {}
-    var value = this.value || {
-      [idField]: '',
-      [nameField]: '',
-      [descriptionField]: ''
-    }
-
-    if (!JSON.stringify(value[descriptionField])) {
-    }
+    var { nameField = 'name', descriptionField = 'description' } = this.column.record.options || {}
+    var value = this.value
 
     return html`
-      ${!JSON.stringify(value[descriptionField])
-        ? html`
-            <span>${value[nameField]}</span>
-            <mwc-icon>arrow_drop_down</mwc-icon>
-          `
+      ${!value
+        ? html``
         : html`
             <span>${value[nameField]} (${value[descriptionField]})</span>
-            <mwc-icon>arrow_drop_down</mwc-icon>
           `}
+      <mwc-icon>arrow_drop_down</mwc-icon>
     `
   }
 
@@ -103,10 +93,15 @@ export class ObjectEditor extends LitElement {
     }
 
     const confirmCallback = selected => {
-      var after = Object.assign({}, this.record, {
-        __dirty__: 'M',
-        [this.column.name]: selected
-      })
+      var after = Object.assign(
+        {
+          __dirty__: 'M'
+        },
+        this.record,
+        {
+          [this.column.name]: selected
+        }
+      )
 
       this.dispatchEvent(
         new CustomEvent('record-change', {
@@ -122,11 +117,12 @@ export class ObjectEditor extends LitElement {
       )
     }
 
+    var value = this.value || {}
     var template =
       this.template ||
       html`
         <object-selector
-          .value=${this.value.id}
+          .value=${value.id}
           style="width: 550px;height: 400px;"
           .confirmCallback=${confirmCallback.bind(this)}
           .queryName=${this.column.record.options.queryName}
