@@ -12,6 +12,41 @@ class PageActionContextBar extends connect(store)(LitElement) {
     }
   }
 
+  static get styles() {
+    return [
+      css`
+        :host {
+          padding: 3px 15px 0 0;
+        }
+        :host *:focus {
+          outline: none;
+        }
+        button {
+          background-color: var(--context-toolbar-button-background-color);
+          text-transform: capitalize;
+          cursor: pointer;
+          padding: var(--context-toolbar-button-padding);
+          height: var(--context-toolbar-button-height);
+          border: var(--context-toolbar-border);
+          border-radius: var(--border-radius);
+          font: var(--context-toolbar-button);
+          color: var(--context-toolbar-button-color);
+        }
+        button:active,
+        button:hover {
+          color: var(--primary-color);
+          border: var(--context-toolbar-border-hover);
+        }
+        button mwc-icon {
+          vertical-align: middle;
+          margin-bottom: var(--context-toolbar-iconbutton-margin);
+          display: var(--context-toolbar-iconbutton-display);
+          font-size: var(--context-toolbar-iconbutton-size);
+        }
+      `
+    ]
+  }
+
   render() {
     return html`
       ${this._actions.map(
@@ -27,7 +62,7 @@ class PageActionContextBar extends connect(store)(LitElement) {
                 </select>
               `
             : html`
-                <mwc-button @click="${action.action}">${action.title}</mwc-button>
+                <button @click="${action.action}"><mwc-icon>done_all</mwc-icon> ${action.title}</button>
               `}
         `
       )}
