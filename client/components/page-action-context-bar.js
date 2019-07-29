@@ -15,9 +15,6 @@ class PageActionContextBar extends connect(store)(LitElement) {
   static get styles() {
     return [
       css`
-        :host {
-          padding: 3px 15px 0 0;
-        }
         :host *:focus {
           outline: none;
         }
