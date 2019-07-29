@@ -15,9 +15,25 @@ import {
 } from '@things-factory/shell'
 import { i18next } from '@things-factory/i18n-base'
 import '@things-factory/form-ui'
-import '@things-factory/component-ui/component/popup/pop-up'
 
 import '../data-grist/wrapper/data-list-wrapper'
+
+function underToCamel(str) {
+  if (str.indexOf('_') > 0) {
+    const strArr = str.split('_')
+    str = strArr
+      .map((str, idx) => {
+        if (idx > 0) {
+          str = str.replace(str[0], str[0].toUpperCase())
+        }
+
+        return str
+      })
+      .join('')
+  }
+
+  return str
+}
 
 class ResourceUI extends connect(store)(PageView) {
   static get styles() {
@@ -47,18 +63,9 @@ class ResourceUI extends connect(store)(PageView) {
 
   static get properties() {
     return {
-      resourceForm: String,
       resourceId: String,
-      baseUrl: String,
-      page: Number,
-      limit: Number,
-      sortingFields: Array,
-      _columns: Array,
-      items: Array,
-      total: Number,
-      importedData: Array,
-      _formLoaded: Boolean,
-      pageProp: String
+      _searchFields: Array,
+      _columns: Array
     }
   }
 
@@ -70,7 +77,7 @@ class ResourceUI extends connect(store)(PageView) {
         data: this._exportableData.bind(this)
       },
       importable: {
-        handler: this.importHandler.bind(this)
+        handler: () => {}
       },
       printable: {
         accept: ['paper', 'preview'],
@@ -87,17 +94,6 @@ class ResourceUI extends connect(store)(PageView) {
     }
   }
 
-  constructor() {
-    super()
-
-    this.pageProp = 'page'
-    this.items = []
-    this.total = 0
-    this.importedData = []
-    this.page = 1
-    this.limit = 20
-  }
-
   firstUpdated() {
     /*
      * TODO 다국어 언어 변화에 대한 대응으로 적절한 지 확인해야함.
@@ -110,18 +106,13 @@ class ResourceUI extends connect(store)(PageView) {
     })
   }
 
-  importHandler(records) {
-    debugger
-    this.importedData = records
-    this.shadowRoot.querySelector('pop-up').open()
-  }
-
   _exportableData() {
-    if (!this.items || !(this.items instanceof Array) || this.items.length == 0) {
-      this.items = [{}]
+    var { records } = this.dataList.data
+    if (!records || !(records instanceof Array) || records.length == 0) {
+      records = [{}]
     }
 
-    return this.items.map(item => {
+    return records.map(item => {
       return this._columns.reduce((record, column) => {
         record[column.term || column.name] = item[column.name]
         return record
@@ -131,23 +122,11 @@ class ResourceUI extends connect(store)(PageView) {
 
   render() {
     return html`
-      <pop-up .title="${this.menuTitle}">
-        <data-list-wrapper
-          .mode="WIDE"
-          .columns=${this._columns}
-          .items=${this.importedData}
-          .total=${this.importedData.length}
-          .limit=${this.limit}
-          .page=${this.page}
-        >
-        </data-list-wrapper>
-      </pop-up>
-
       <search-form
         id="search-form"
-        .fields="${this.searchFields}"
+        .fields=${this._searchFields}
         initFocus="description"
-        @submit="${this._searchData}"
+        @submit=${e => this.dataList.fetch()}
       ></search-form>
 
       <data-list-wrapper
@@ -155,26 +134,40 @@ class ResourceUI extends connect(store)(PageView) {
         .mode=${isMobileDevice() ? 'LIST' : 'GRID'}
         .columns=${this._columns}
         .records=${this.items}
-        .total=${this.total}
-        .limit=${this.limit}
-        .page=${this.page}
-        @page-changed=${e => {
-          this.page = e.detail
-        }}
-        @limit-changed=${e => {
-          this.limit = e.detail
-        }}
-        @sorters-changed=${e => {
-          this.sortingFields = e.detail
-          this._searchData()
-        }}
+        .fetchHandler=${this.fetchHandler.bind(this)}
       >
       </data-list-wrapper>
     `
   }
 
+  async fetchHandler({ page, limit, sorters = [] }) {
+    if (!this.resourceUrl) {
+      return
+    }
+
+    const response = await client.query({
+      query: gql`
+        ${this._queryBuilder({
+          page,
+          limit,
+          sorters,
+          filters: this.buildFilters()
+        })}
+      `
+    })
+
+    return {
+      total: response.data.response.total || 0,
+      records: response.data.response.items || []
+    }
+  }
+
   get searchForm() {
     return this.shadowRoot.querySelector('#search-form')
+  }
+
+  get dataList() {
+    return this.shadowRoot.querySelector('data-list-wrapper')
   }
 
   async _getResourceData() {
@@ -225,19 +218,12 @@ class ResourceUI extends connect(store)(PageView) {
 
     this.menuMeta = response.data.menu
     this.menuTitle = this.menuMeta.name
-    this.resourceUrl = this._underToCamel(this.menuMeta.resourceUrl)
+    this.resourceUrl = underToCamel(this.menuMeta.resourceUrl)
 
+    this.searchForm.form.reset()
     this._parseResourceMeta()
 
-    /* page context를 update해주어야 한다. */
     this.updateContext()
-
-    /* parsing이 완료된 후에 page를 변경한다. 페이지 변경에 의해 searchData()가 실행되어야 한다. */
-    if (this.page == 1) {
-      this._searchData()
-    } else {
-      this.page = 1
-    }
   }
 
   _parseResourceMeta() {
@@ -258,9 +244,9 @@ class ResourceUI extends connect(store)(PageView) {
       })
 
     // TODO: submit 테스트용도 서버에서 실행 로직을 전달 받을 수 있거나 resource-ui 가 직접 submit 가능 여부를 판단할 수 있도록 수정
-    this.buttons = metaData.buttons.concat({ text: 'submit', action: this._searchData.bind(this) })
+    this.buttons = metaData.buttons //.concat({ text: 'submit', action: this._searchData.bind(this) })
 
-    this.searchFields = metaData.columns
+    this._searchFields = metaData.columns
       .filter(field => field.searchRank && field.searchRank > 0)
       .sort((a, b) => (a['searchRank'] > b['searchRank'] ? 1 : -1))
       .map(field => {
@@ -276,36 +262,17 @@ class ResourceUI extends connect(store)(PageView) {
           value: field.searchInitVal
         }
       })
-
-    this.sortingFields = metaData.columns
-      .filter(column => column.sortRank && column.sortRank > 0)
-      .sort((a, b) => {
-        return a.sortRank > b.sortRank ? 1 : -1
-      })
   }
 
-  async _searchData() {
-    this.items = []
-
-    const response = await client.query({
-      query: gql`
-        ${this._queryBuilder()}
-      `
-    })
-
-    this.items = response.data.response.items || []
-    this.total = response.data.response.total || 0
-  }
-
-  _queryBuilder() {
+  _queryBuilder({ page, limit, sorters, filters }) {
     /* column 정보가 없는 경우 systax 오류를 방지하기 위해, '임시로' id를 제공함. */
     var fields =
       this._columns && this._columns.length > 0
         ? this._columns
             .map(column => {
               return column.refType == 'Entity' || column.refType == 'Menu'
-                ? `${this._underToCamel(column.name).replace('Id', '')} { id name description }`
-                : this._underToCamel(column.name)
+                ? `${underToCamel(column.name).replace('Id', '')} { id name description }`
+                : underToCamel(column.name)
             })
             .join()
         : 'id'
@@ -314,9 +281,11 @@ class ResourceUI extends connect(store)(PageView) {
     query {
       response: ${this.resourceUrl} (
         ${gqlBuilder.buildArgs({
-          filters: this._parseSearchConditions(),
-          pagination: this._parsePagination(),
-          sortings: this._parseSortings()
+          filters,
+          pagination: { limit, page },
+          sortings: sorters.map(sorter => {
+            return { name: sorter.name, desc: !!sorter.descending }
+          })
         })}
       ) {
         items {
@@ -330,24 +299,7 @@ class ResourceUI extends connect(store)(PageView) {
     return queryStr
   }
 
-  _underToCamel(str) {
-    if (str.indexOf('_') > 0) {
-      const strArr = str.split('_')
-      str = strArr
-        .map((str, idx) => {
-          if (idx > 0) {
-            str = str.replace(str[0], str[0].toUpperCase())
-          }
-
-          return str
-        })
-        .join('')
-    }
-
-    return str
-  }
-
-  _parseSearchConditions() {
+  buildFilters() {
     const conditions = []
 
     this.searchForm.getFields().forEach(field => {
@@ -364,43 +316,13 @@ class ResourceUI extends connect(store)(PageView) {
     return conditions
   }
 
-  _parsePagination() {
-    return {
-      limit: this.limit,
-      page: this.page
-    }
-  }
-
-  _parseSortings() {
-    const sortings = []
-    if (this.sortingFields && this.sortingFields.length > 0) {
-      this.sortingFields.map(field => {
-        sortings.push({
-          name: this._underToCamel(field.name),
-          desc: field.reverseSort ? field.reverseSort : false
-        })
-      })
-    }
-
-    return sortings
-  }
-
   stateChanged(state) {
-    this.baseUrl = state.app.baseUrl
     this.resourceId = state.route.resourceId
   }
 
-  async updated(changed) {
+  updated(changed) {
     if (changed.has('resourceId')) {
-      /*
-       * 새로운 searchForm이 만들어지는 경우에는,
-       * _searchData() 전에 새로운 meta정보를 가져온 것을 보장하기 위해서 await를 사용한다.
-       */
-      await this._getResourceData()
-    }
-
-    if (changed.has('limit') || changed.has('page')) {
-      this._searchData()
+      this._getResourceData()
     }
   }
 

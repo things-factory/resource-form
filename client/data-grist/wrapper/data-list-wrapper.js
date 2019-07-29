@@ -5,11 +5,16 @@ import '@things-factory/grist-ui'
 const GUTTERS = [
   {
     type: 'gutter',
+    name: 'dirty'
+  },
+  {
+    type: 'gutter',
     name: 'sequence'
   },
   {
     type: 'gutter',
-    name: 'row-selector'
+    name: 'row-selector',
+    multiple: true
   },
   {
     type: 'gutter',
@@ -45,12 +50,10 @@ export class DataListWrapper extends LitElement {
     return {
       mode: String,
       columns: Array,
-      records: Array,
-      limit: Number,
-      page: Number,
-      total: Number,
       _config: Object,
-      _data: Object
+      fetchHandler: Object,
+      fetchOptions: Object,
+      editHandler: Object
     }
   }
 
@@ -59,29 +62,24 @@ export class DataListWrapper extends LitElement {
       <data-grist
         .mode=${this.mode}
         .config=${this._config}
-        .data=${this._data}
-        @sorters-changed=${this.onSortersChanged.bind(this)}
+        .editHandler=${this.editHandler}
+        .fetchHandler=${this.fetchHandler}
+        .fetchOptions=${this.fetchOptions}
       >
       </data-grist>
     `
   }
 
-  onSortersChanged(e) {
-    e.stopPropagation()
-    this.dispatchEvent(
-      new CustomEvent('sorters-changed', {
-        detail: this.convertSorters(e.detail)
-      })
-    )
+  get dataGrist() {
+    return this.shadowRoot.querySelector('data-grist')
   }
 
-  convertSorters(sorters) {
-    return sorters.map(column => {
-      return {
-        name: column.name,
-        reverseSort: column.descending
-      }
-    })
+  fetch() {
+    this.dataGrist.fetch()
+  }
+
+  get data() {
+    return this.dataGrist._data
   }
 
   buildConfig() {
@@ -114,7 +112,14 @@ export class DataListWrapper extends LitElement {
       }
     })
 
-    var sorters = this.columns.filter(column => column.sortRank)
+    var sorters = this.columns
+      .filter(column => column.sortRank)
+      .map(column => {
+        return {
+          name: column.name,
+          descending: !!column.reverseSort
+        }
+      })
 
     return {
       columns: [...GUTTERS, ...columns],
@@ -122,23 +127,17 @@ export class DataListWrapper extends LitElement {
         ...PAGINATION,
         infinite: false
       },
-      sorters: this.convertSorters(sorters)
+      rows: {
+        appendable: true,
+        insertable: true
+      },
+      sorters
     }
   }
 
   updated(changes) {
     if (changes.has('columns')) {
-      this.records = []
       this._config = this.buildConfig()
-    }
-
-    if (changes.has('records') || changes.has('page') || changes.has('limit') || changes.has('total')) {
-      this._data = {
-        records: this.records,
-        limit: this.limit,
-        page: this.page,
-        total: this.total
-      }
     }
   }
 }
