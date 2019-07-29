@@ -108,6 +108,11 @@ export class DataListWrapper extends LitElement {
           // editor: '',
           // decorator: '',
           align
+        },
+        rows: {
+          selectable: {
+            multiple: true
+          }
         }
       }
     })
