@@ -45,7 +45,7 @@ export class ObjectEditor extends LitElement {
 
       mwc-icon {
         width: 20px;
-        font-size: 20px;
+        font-size: 1.5em;
         vertical-align: middle;
       }
     `
