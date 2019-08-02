@@ -32,21 +32,20 @@ export class ObjectEditor extends LitElement {
 
         font: var(--grist-object-editor-font);
         color: var(--grist-object-editor-color);
+        justify-content: inherit;
       }
 
       span {
-        display: block;
+        display: flex;
         flex: auto;
 
-        height: 100%;
-
-        text-align: inherit;
+        justify-content: inherit;
       }
 
       mwc-icon {
         width: 20px;
         font-size: 1.5em;
-        vertical-align: middle;
+        margin-left: auto;
       }
     `
   }
@@ -92,13 +91,19 @@ export class ObjectEditor extends LitElement {
     }
 
     const confirmCallback = selected => {
+      var { idField = 'id', nameField = 'name', descriptionField = 'description' } = this.column.record.options || {}
+
       this.dispatchEvent(
         new CustomEvent('field-change', {
           bubbles: true,
           composed: true,
           detail: {
             before: this.value,
-            after: selected,
+            after: {
+              [idField]: selected[idField],
+              [nameField]: selected[nameField],
+              [descriptionField]: selected[descriptionField]
+            },
             row: this.row,
             column: this.column
           }
