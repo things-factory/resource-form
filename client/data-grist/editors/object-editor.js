@@ -92,23 +92,13 @@ export class ObjectEditor extends LitElement {
     }
 
     const confirmCallback = selected => {
-      var after = Object.assign(
-        {
-          __dirty__: 'M'
-        },
-        this.record,
-        {
-          [this.column.name]: selected
-        }
-      )
-
       this.dispatchEvent(
-        new CustomEvent('record-change', {
+        new CustomEvent('field-change', {
           bubbles: true,
           composed: true,
           detail: {
-            before: this.record,
-            after,
+            before: this.value,
+            after: selected,
             row: this.row,
             column: this.column
           }

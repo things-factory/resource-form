@@ -5,20 +5,20 @@ import '@things-factory/grist-ui'
 const GUTTERS = [
   {
     type: 'gutter',
-    name: 'dirty'
+    gutterName: 'dirty'
   },
   {
     type: 'gutter',
-    name: 'sequence'
+    gutterName: 'sequence'
   },
   {
     type: 'gutter',
-    name: 'row-selector',
+    gutterName: 'row-selector',
     multiple: true
   },
   {
     type: 'gutter',
-    name: 'button',
+    gutterName: 'button',
     icon: 'edit'
   }
 ]

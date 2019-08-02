@@ -112,11 +112,11 @@ export class ObjectSelector extends LitElement {
       columns: [
         {
           type: 'gutter',
-          name: 'sequence'
+          gutterName: 'sequence'
         },
         {
           type: 'gutter',
-          name: 'row-selector',
+          gutterName: 'row-selector',
           multiple: false
         },
         {
