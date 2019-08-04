@@ -165,6 +165,10 @@ export class ObjectSelector extends LitElement {
     if (selected) {
       this.selectedRecords = [selected]
     }
+
+    await this.updateComplete
+    var grist = this.shadowRoot.querySelector('data-grist')
+    grist && grist.focus()
   }
 
   async getData() {

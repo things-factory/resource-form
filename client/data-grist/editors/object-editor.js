@@ -73,6 +73,8 @@ export class ObjectEditor extends LitElement {
 
       this.openSelector()
     })
+
+    this.openSelector()
   }
 
   get icon() {
