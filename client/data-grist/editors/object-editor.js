@@ -104,8 +104,9 @@ export class ObjectEditor extends LitElement {
               [nameField]: selected[nameField],
               [descriptionField]: selected[descriptionField]
             },
-            row: this.row,
-            column: this.column
+            record: this.record,
+            column: this.column,
+            row: this.row
           }
         })
       )
