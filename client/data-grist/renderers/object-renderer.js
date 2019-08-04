@@ -1,8 +1,6 @@
 import { html } from 'lit-html'
 
-export const ObjectRenderer = (column, record, rowIndex) => {
-  var value = record[column.name]
-
+export const ObjectRenderer = (value, column, record, rowIndex, field) => {
   if (!value) {
     return ''
   }
