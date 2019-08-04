@@ -73,18 +73,6 @@ export class ObjectEditor extends LitElement {
 
       this.openSelector()
     })
-
-    this.openSelector()
-  }
-
-  get icon() {
-    return this.shadowRoot.querySelector('mwc-icon')
-  }
-
-  select() {}
-
-  focus() {
-    this.icon.focus()
   }
 
   openSelector() {
