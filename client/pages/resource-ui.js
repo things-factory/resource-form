@@ -158,6 +158,8 @@ class ResourceUI extends connect(store)(PageView) {
 
     return {
       total: response.data.response.total || 0,
+      page,
+      limit,
       records: response.data.response.items || []
     }
   }
