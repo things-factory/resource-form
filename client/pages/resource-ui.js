@@ -2,17 +2,7 @@ import { css, html } from 'lit-element'
 import { connect } from 'pwa-helpers/connect-mixin.js'
 import gql from 'graphql-tag'
 
-import PullToRefresh from 'pulltorefreshjs'
-
-import {
-  client,
-  gqlBuilder,
-  PageView,
-  PullToRefreshStyles,
-  ScrollbarStyles,
-  store,
-  isMobileDevice
-} from '@things-factory/shell'
+import { client, gqlBuilder, PageView, ScrollbarStyles, store, isMobileDevice } from '@things-factory/shell'
 import { i18next } from '@things-factory/i18n-base'
 import '@things-factory/form-ui'
 
@@ -39,7 +29,6 @@ class ResourceUI extends connect(store)(PageView) {
   static get styles() {
     return [
       ScrollbarStyles,
-      PullToRefreshStyles,
       css`
         :host {
           display: flex;
@@ -325,29 +314,6 @@ class ResourceUI extends connect(store)(PageView) {
   updated(changed) {
     if (changed.has('resourceId')) {
       this._getResourceData()
-    }
-  }
-
-  async activated(active) {
-    if (active) {
-      await this.updateComplete
-      /*
-       * 첫번째 active 시에는 element가 생성되어있지 않으므로,
-       * 꼭 updateComplete를 기다린 후에 mainElement설정을 해야한다.
-       */
-      this._ptr = PullToRefresh.init({
-        mainElement: this.shadowRoot.querySelector('[pulltorefresh]'),
-        distIgnore: 30,
-        instructionsPullToRefresh: 'Pull down to refresh',
-        instructionsRefreshing: 'Refreshing',
-        instructionsReleaseToRefresh: 'Release to refresh',
-        onRefresh: () => {
-          this._getResourceData()
-        }
-      })
-    } else {
-      this._ptr && this._ptr.destroy()
-      delete this._ptr
     }
   }
 }
