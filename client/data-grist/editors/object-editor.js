@@ -3,6 +3,7 @@ import { LitElement, html, css } from 'lit-element'
 import '@material/mwc-icon'
 
 import { openPopup } from '@things-factory/layout-base'
+import { i18next } from '@things-factory/i18n-base'
 import './object-selector'
 
 export class ObjectEditor extends LitElement {
@@ -116,7 +117,8 @@ export class ObjectEditor extends LitElement {
 
     this.popup = openPopup(template, {
       backdrop: true,
-      size: 'large'
+      size: 'large',
+      title: i18next.t('title.select_item')
     })
   }
 }
