@@ -52,7 +52,7 @@ export class ObjectEditor extends LitElement {
   }
 
   render() {
-    var value = this.value
+    var value = this.value || {}
 
     var { nameField = 'name', descriptionField = 'description' } = this.column.record.options || {}
     var name = nameField && value[nameField]
