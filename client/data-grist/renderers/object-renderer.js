@@ -6,8 +6,10 @@ export const ObjectRenderer = (value, column, record, rowIndex, field) => {
   }
 
   var { nameField = 'name', descriptionField = 'description' } = column.record.options || {}
+  var name = nameField && value[nameField]
+  var description = descriptionField && value[descriptionField] && `(${value[descriptionField]})`
 
   return html`
-    ${value[nameField] || ''}(${value[descriptionField] || ''})
+    ${name || ''}${description || ''}
   `
 }

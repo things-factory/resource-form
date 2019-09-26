@@ -52,14 +52,17 @@ export class ObjectEditor extends LitElement {
   }
 
   render() {
-    var { nameField = 'name', descriptionField = 'description' } = this.column.record.options || {}
     var value = this.value
+
+    var { nameField = 'name', descriptionField = 'description' } = column.record.options || {}
+    var name = nameField && value[nameField]
+    var description = descriptionField && value[descriptionField] && `(${value[descriptionField]})`
 
     return html`
       ${!value
         ? html``
         : html`
-            <span>${value[nameField]} (${value[descriptionField]})</span>
+            <span>${name || ''}${description || ''}</span>
           `}
       <mwc-icon>arrow_drop_down</mwc-icon>
     `
