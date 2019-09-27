@@ -18,6 +18,7 @@ import { InputEditor } from '@things-factory/grist-ui'
 */
 
 const FETCH_COMMON_CODE_GQL = codeName => gql`
+{
   commonCode(name: "${codeName}") {
     details {
       name
@@ -25,6 +26,7 @@ const FETCH_COMMON_CODE_GQL = codeName => gql`
       rank
     }
   }
+}
 `
 
 export class CodeEditor extends InputEditor {
