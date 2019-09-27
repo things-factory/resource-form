@@ -36,7 +36,7 @@ export class CodeEditor extends InputEditor {
     })
 
     if (response) {
-      this.column.record.codes = response.data.details.sort(function(a, b) {
+      this.column.record.codes = response.data.commonCode.details.sort(function(a, b) {
         return a.rank - b.rank
       })
     }
