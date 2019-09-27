@@ -1,6 +1,8 @@
 import { html } from 'lit-element'
-
+import gql from 'graphql-tag'
 import '@material/mwc-icon'
+
+import { client } from '@things-factory/shell'
 import { InputEditor } from '@things-factory/grist-ui'
 
 /* 
@@ -14,12 +16,36 @@ import { InputEditor } from '@things-factory/grist-ui'
   - 어느 시점에 코드를 refetch할까 ? 그리드가 새로 만들어질 때 ? 그리드가 새로 configuration 될 때 ?
   - 다국어는 어떻게 처리할까 ? 코드 디스크립션이 언어에 따라서 정의되지 않으므로 다국어는 생각하지 않는다.
 */
+
+const FETCH_COMMON_CODE_GQL = codeName => gql`
+  commonCode(name: "${codeName}") {
+    details {
+      name
+      description
+      rank
+    }
+  }
+`
+
 export class CodeEditor extends InputEditor {
+  async fetchCode(codeName) {
+    var response = await client.query({
+      query: FETCH_COMMON_CODE_GQL(codeName)
+    })
+
+    if (response) {
+      this.column.record.codes = response.data.details.sort(function(a, b) {
+        return a.rank - b.rank
+      })
+    }
+  }
+
   get editorTemplate() {
     var { codeName, codes } = this.column.record || {}
 
     if (!codes && codeName) {
       /* 1. codeName으로 fetch 해와서, this.column.record.codes에 보관한다. */
+      this.fetchCode(codeName)
     }
 
     return html`
