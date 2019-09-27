@@ -293,7 +293,7 @@ class ResourceUI extends connect(store)(PageView) {
   buildFilters() {
     const conditions = []
 
-    this.searchForm.getFields().forEach(field => {
+    this.searchForm.formFields.forEach(field => {
       if (field.value) {
         conditions.push({
           name: field.name,
