@@ -16,12 +16,14 @@ class ObjectInputContainer extends LitElement {
   static get styles() {
     return css`
       :host {
+        display: inline;
         position: relative;
       }
 
       div {
         position: absolute;
         height: 100%;
+        width: 100%;
         left: 0;
         top: 0;
       }
