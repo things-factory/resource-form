@@ -4,7 +4,7 @@ import '@material/mwc-icon'
 
 import { openPopup } from '@things-factory/layout-base'
 import { i18next } from '@things-factory/i18n-base'
-import './object-selector'
+import '../../elements/object-selector'
 
 export class ObjectEditor extends LitElement {
   static get properties() {

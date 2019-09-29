@@ -4,7 +4,7 @@ import { client, gqlBuilder } from '@things-factory/shell'
 import { openPopup } from '@things-factory/layout-base'
 import { i18next } from '@things-factory/i18n-base'
 
-import '../data-grist/editors/object-selector'
+import './object-selector'
 
 /*
  * USAGE
