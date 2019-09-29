@@ -6,6 +6,12 @@ import { i18next } from '@things-factory/i18n-base'
 
 import '../data-grist/editors/object-selector'
 
+/*
+ * USAGE
+ *
+ * <input type="text" query-name="boards" value="9432279e-28ea-4c60-bb92-6211439ec390" is="object-input" />
+ *
+ */
 class ObjectInputContainer extends LitElement {
   static get styles() {
     return css`
