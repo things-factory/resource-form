@@ -152,7 +152,8 @@ export class ObjectSelector extends LitElement {
         },
         handlers: {
           click: 'select-row'
-        }
+        },
+        appendable: false
       },
       pagination: {
         infinite: true
