@@ -96,17 +96,7 @@ class ResourceUI extends connect(store)(PageView) {
   }
 
   _exportableData() {
-    var { records } = this.dataList.data
-    if (!records || !(records instanceof Array) || records.length == 0) {
-      records = [{}]
-    }
-
-    return records.map(item => {
-      return this._columns.reduce((record, column) => {
-        record[column.term || column.name] = item[column.name]
-        return record
-      }, {})
-    })
+    return this.dataList.exportRecords()
   }
 
   render() {
