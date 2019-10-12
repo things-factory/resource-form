@@ -151,7 +151,10 @@ export class ObjectSelector extends LitElement {
           multiple: false
         },
         handlers: {
-          click: 'select-row'
+          click: 'select-row',
+          dblclick: (columns, data, column, record, rowIndex, field) => {
+            this.onconfirm()
+          }
         },
         appendable: false
       },
