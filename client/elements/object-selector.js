@@ -66,7 +66,7 @@ export class ObjectSelector extends LitElement {
           ${this.select && this.select.length > 0
             ? html`
                 ${this.select
-                  .filter(selectField => !selectField.hidden)
+                  .filter(selectField => !selectField.hidden && (!selectField.type || selectField.type === 'string'))
                   .map(
                     selectField => html`
                       <label>${i18next.t(`field.${selectField.name}`)}</label>
@@ -263,7 +263,7 @@ export class ObjectSelector extends LitElement {
   }
 
   serializeFormData() {
-    const searchInputs = Array.from(this.shadowRoot.querySelectorAll('#search-form > input'))
+    const searchInputs = Array.from(this.shadowRoot.querySelectorAll('#search-form input'))
     return searchInputs
       .filter(input => input.value)
       .map(input => {
