@@ -116,6 +116,7 @@ export class ObjectEditor extends LitElement {
           .value=${value.id}
           .confirmCallback=${confirmCallback.bind(this)}
           .queryName=${this.column.record.options.queryName}
+          .select=${this.column.record.options.select}
           .basicArgs=${this.column.record.options.basicArgs}
         ></object-selector>
       `

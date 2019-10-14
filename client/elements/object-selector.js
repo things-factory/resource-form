@@ -12,6 +12,7 @@ export class ObjectSelector extends LitElement {
       config: Object,
       data: Object,
       queryName: String,
+      select: Array,
       basicArgs: Object,
       confirmCallback: Object,
       selectedRecords: Array
@@ -50,12 +51,6 @@ export class ObjectSelector extends LitElement {
     ]
   }
 
-  get context() {
-    return {
-      title: i18next.t('title.confirm_arrival_notice')
-    }
-  }
-
   render() {
     return html`
       <form
@@ -68,11 +63,24 @@ export class ObjectSelector extends LitElement {
         }}
       >
         <fieldset>
-          <label>${i18next.t('field.name')}</label>
-          <input name="name" />
+          ${this.select && this.select.length > 0
+            ? html`
+                ${this.select
+                  .filter(selectField => !selectField.hidden)
+                  .map(
+                    selectField => html`
+                      <label>${i18next.t(`field.${selectField.name}`)}</label>
+                      <input name="${selectField.name}" />
+                    `
+                  )}
+              `
+            : html`
+                <label>${i18next.t('field.name')}</label>
+                <input name="name" />
 
-          <label>${i18next.t('field.description')}</label>
-          <input name="description" />
+                <label>${i18next.t('field.description')}</label>
+                <input name="description" />
+              `}
         </fieldset>
 
         <mwc-icon
@@ -118,32 +126,6 @@ export class ObjectSelector extends LitElement {
           type: 'gutter',
           gutterName: 'row-selector',
           multiple: false
-        },
-        {
-          type: 'string',
-          name: 'id',
-          header: i18next.t('field.id'),
-          hidden: true
-        },
-        {
-          type: 'string',
-          name: 'name',
-          header: i18next.t('field.name'),
-          record: {
-            align: 'left'
-          },
-          sortable: true,
-          width: 160
-        },
-        {
-          type: 'string',
-          name: 'description',
-          header: i18next.t('field.description'),
-          record: {
-            align: 'left'
-          },
-          sortable: true,
-          width: 300
         }
       ],
       rows: {
@@ -160,6 +142,54 @@ export class ObjectSelector extends LitElement {
       },
       pagination: {
         infinite: true
+      }
+    }
+
+    if (this.select && this.select.length > 0) {
+      this.config = {
+        ...this.config,
+        columns: [
+          {
+            type: 'gutter',
+            gutterName: 'sequence'
+          },
+          {
+            type: 'gutter',
+            gutterName: 'row-selector',
+            multiple: false
+          },
+          ...this.select.map(selectField => {
+            return {
+              ...selectField,
+              type: selectField.type ? selectField.type : 'string',
+              width: selectField.width ? selectField.width : 160,
+              header: selectField.header ? selectField.header : i18next.t(`field.${selectField.name}`)
+            }
+          })
+        ]
+      }
+    } else {
+      this.config = {
+        ...this.config,
+        columns: [
+          ...this.config.columns,
+          {
+            type: 'string',
+            name: 'id',
+            header: i18next.t('field.id'),
+            hidden: true
+          },
+          {
+            type: 'string',
+            name: 'name',
+            header: i18next.t('field.name'),
+            record: {
+              align: 'left'
+            },
+            sortable: true,
+            width: 160
+          }
+        ]
       }
     }
 
@@ -180,12 +210,7 @@ export class ObjectSelector extends LitElement {
       query: gql`
         query {
           ${this.queryName} (${gqlBuilder.buildArgs(this._buildConditions())}) {
-            items {
-              id
-              name
-              description
-            }
-            total
+            ${this.getSelectFields()}
           }
         }
       `
@@ -196,6 +221,23 @@ export class ObjectSelector extends LitElement {
       total: response.data[this.queryName].total,
       limit: 100,
       page: 1
+    }
+  }
+
+  getSelectFields() {
+    if (this.select && this.select.length > 0) {
+      return `items {
+        ${this.select.map(selectField => {
+          return selectField.type === 'object'
+            ? `${selectField.name} { ${
+                selectField.subFields && selectField.subFields.length > 0
+                  ? selectField.subFields.join(' ')
+                  : `id name description`
+              } }`
+            : `${selectField.name}`
+        })}
+      }
+      total`
     }
   }
 
