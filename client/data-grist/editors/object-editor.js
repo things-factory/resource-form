@@ -100,6 +100,7 @@ export class ObjectEditor extends LitElement {
               [nameField]: selected[nameField],
               [descriptionField]: selected[descriptionField]
             },
+            selected,
             record: this.record,
             column: this.column,
             row: this.row

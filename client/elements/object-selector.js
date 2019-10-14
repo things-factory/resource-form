@@ -149,15 +149,7 @@ export class ObjectSelector extends LitElement {
       this.config = {
         ...this.config,
         columns: [
-          {
-            type: 'gutter',
-            gutterName: 'sequence'
-          },
-          {
-            type: 'gutter',
-            gutterName: 'row-selector',
-            multiple: false
-          },
+          ...this.config.columns,
           ...this.select.map(selectField => {
             return {
               ...selectField,
@@ -188,6 +180,16 @@ export class ObjectSelector extends LitElement {
             },
             sortable: true,
             width: 160
+          },
+          {
+            type: 'string',
+            name: 'description',
+            header: i18next.t('field.description'),
+            record: {
+              align: 'left'
+            },
+            sortable: true,
+            width: 300
           }
         ]
       }
@@ -238,6 +240,15 @@ export class ObjectSelector extends LitElement {
         })}
       }
       total`
+    } else {
+      return `
+        items {
+          id
+          name
+          description
+        }
+        total
+      `
     }
   }
 
