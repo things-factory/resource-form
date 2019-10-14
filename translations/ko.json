@@ -6,5 +6,6 @@
   "button.submit": "제출",
   "button.add": "추가",
   "button.confirm": "확인",
-  "button.receive": "접수"
+  "button.receive": "접수",
+  "title.select_item": "아이템 선택"
 }

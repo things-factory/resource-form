@@ -6,5 +6,6 @@
   "button.submit": "submit",
   "button.add": "add",
   "button.confirm": "confirm",
-  "button.receive": "receive"
+  "button.receive": "receive",
+  "title.select_item": "select item"
 }
