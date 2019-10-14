@@ -96,11 +96,11 @@ export class ObjectEditor extends LitElement {
           detail: {
             before: this.value,
             after: {
+              ...selected,
               [idField]: selected[idField],
               [nameField]: selected[nameField],
               [descriptionField]: selected[descriptionField]
             },
-            selected,
             record: this.record,
             column: this.column,
             row: this.row
