@@ -59,7 +59,7 @@ export class ObjectSelector extends LitElement {
         id="search-form"
         @keypress=${async e => {
           if (e.keyCode === 13) {
-            this.data = await this.getData()
+            this.data = await this.grist.fetch()
           }
         }}
       >
@@ -87,7 +87,7 @@ export class ObjectSelector extends LitElement {
         <mwc-icon
           search
           @click="${async () => {
-            this.data = await this.getData()
+            this.data = await this.grist.fetch()
           }}}"
           >search</mwc-icon
         >
@@ -97,6 +97,7 @@ export class ObjectSelector extends LitElement {
         .mode=${isMobileDevice() ? 'LIST' : 'GRID'}
         .config=${this.config}
         .data=${this.data}
+        .fetchHandler="${this.fetchHandler.bind(this)}"
         .selectedRecords=${this.selectedRecords}
       ></data-grist>
 
@@ -105,6 +106,10 @@ export class ObjectSelector extends LitElement {
         <mwc-button @click=${this.onconfirm.bind(this)}>${i18next.t('button.confirm')}</mwc-button>
       </div>
     `
+  }
+
+  get grist() {
+    return this.shadowRoot.querySelector('data-grist')
   }
 
   oncancel(e) {
@@ -116,8 +121,42 @@ export class ObjectSelector extends LitElement {
     history.back()
   }
 
+  async fetchHandler({ page, limit, sorters = [] }) {
+    const response = await client.query({
+      query: gql`
+        query {
+          ${this.queryName} (${gqlBuilder.buildArgs(this._buildConditions(page, limit, sorters))}) {
+            ${this.getSelectFields()}
+          }
+        }
+      `
+    })
+
+    if (!response.errors) {
+      const records = response.data[this.queryName].items.map(item => {
+        if (this.value === item.id) {
+          this.selectedRecords = [item]
+          item['__selected__'] = true
+        }
+
+        return item
+      })
+      const total = response.data[this.queryName].total
+
+      return {
+        records,
+        total,
+        limit,
+        page
+      }
+    }
+  }
+
   async firstUpdated() {
     this.config = {
+      list: {
+        fields: ['palletId', 'product', 'bizplace', 'location']
+      },
       columns: [
         {
           type: 'gutter',
@@ -140,9 +179,6 @@ export class ObjectSelector extends LitElement {
           }
         },
         appendable: false
-      },
-      pagination: {
-        infinite: true
       }
     }
 
@@ -210,35 +246,8 @@ export class ObjectSelector extends LitElement {
       }
     }
 
-    this.data = await this.getData()
-
-    var selected = this.data.records.find(item => this.value == item.id)
-    if (selected) {
-      this.selectedRecords = [selected]
-    }
-
     await this.updateComplete
-    var grist = this.shadowRoot.querySelector('data-grist')
-    grist && grist.focus()
-  }
-
-  async getData() {
-    const response = await client.query({
-      query: gql`
-        query {
-          ${this.queryName} (${gqlBuilder.buildArgs(this._buildConditions())}) {
-            ${this.getSelectFields()}
-          }
-        }
-      `
-    })
-
-    return {
-      records: response.data[this.queryName].items,
-      total: response.data[this.queryName].total,
-      limit: 100,
-      page: 1
-    }
+    this.grist && this.grist.focus()
   }
 
   getSelectFields() {
@@ -267,13 +276,15 @@ export class ObjectSelector extends LitElement {
     }
   }
 
-  _buildConditions() {
+  _buildConditions(page, limit, sorters) {
     const queryConditions = {
       filters: [],
       ...this.basicArgs
     }
 
     queryConditions.filters = [...queryConditions.filters, ...this.serializeFormData()]
+    queryConditions.pagination = { page, limit }
+    queryConditions.sortings = sorters
     return queryConditions
   }
 
@@ -282,7 +293,7 @@ export class ObjectSelector extends LitElement {
     return searchInputs
       .filter(input => input.value)
       .map(input => {
-        return { name: input.name, operator: 'like', value: input.value }
+        return { name: input.name, operator: 'i_like', value: `%${input.value}%` }
       })
   }
 
