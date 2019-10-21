@@ -13,6 +13,7 @@ export class ObjectSelector extends LitElement {
       data: Object,
       queryName: String,
       select: Array,
+      list: Object,
       basicArgs: Object,
       confirmCallback: Object,
       selectedRecords: Array
@@ -192,6 +193,20 @@ export class ObjectSelector extends LitElement {
             width: 300
           }
         ]
+      }
+    }
+
+    this.config = {
+      ...this.config,
+      list: {
+        ...this.list,
+        fields:
+          this.list && this.list.fields && this.list.fields.length > 0
+            ? this.list.fields
+            : this.config.columns
+                .filter(column => column.type !== 'gutter')
+                .slice(0, 3)
+                .map(column => column.name)
       }
     }
 
