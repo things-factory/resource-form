@@ -9,6 +9,7 @@ export class ObjectSelector extends LitElement {
   static get properties() {
     return {
       value: String,
+      searchFields: Array,
       config: Object,
       data: Object,
       queryName: String,
@@ -54,44 +55,15 @@ export class ObjectSelector extends LitElement {
 
   render() {
     return html`
-      <form
-        class="multi-column-form"
+      <search-form
         id="search-form"
-        @keypress=${async e => {
+        @keypress="${async e => {
           if (e.keyCode === 13) {
             this.data = await this.grist.fetch()
           }
-        }}
-      >
-        <fieldset>
-          ${this.select && this.select.length > 0
-            ? html`
-                ${this.select
-                  .filter(selectField => !selectField.hidden && (!selectField.type || selectField.type === 'string'))
-                  .map(
-                    selectField => html`
-                      <label>${i18next.t(`field.${selectField.name}`)}</label>
-                      <input name="${selectField.name}" />
-                    `
-                  )}
-              `
-            : html`
-                <label>${i18next.t('field.name')}</label>
-                <input name="name" />
-
-                <label>${i18next.t('field.description')}</label>
-                <input name="description" />
-              `}
-        </fieldset>
-
-        <mwc-icon
-          search
-          @click="${async () => {
-            this.data = await this.grist.fetch()
-          }}}"
-          >search</mwc-icon
-        >
-      </form>
+        }}"
+        .fields="${this.searchFields}"
+      ></search-form>
 
       <data-grist
         .mode=${isMobileDevice() ? 'LIST' : 'GRID'}
@@ -125,7 +97,7 @@ export class ObjectSelector extends LitElement {
     const response = await client.query({
       query: gql`
         query {
-          ${this.queryName} (${gqlBuilder.buildArgs(this._buildConditions(page, limit, sorters))}) {
+          ${this.queryName} (${gqlBuilder.buildArgs(await this._buildConditions(page, limit, sorters))}) {
             ${this.getSelectFields()}
           }
         }
@@ -154,9 +126,6 @@ export class ObjectSelector extends LitElement {
 
   async firstUpdated() {
     this.config = {
-      list: {
-        fields: ['palletId', 'product', 'bizplace', 'location']
-      },
       columns: [
         {
           type: 'gutter',
@@ -183,6 +152,37 @@ export class ObjectSelector extends LitElement {
     }
 
     if (this.select && this.select.length > 0) {
+      let _searchFields = this.select.filter(selectField => !selectField.hidden)
+      if (this.list && this.list.fields && this.list.fields.length > 0) {
+        _searchFields = _searchFields.filter(searchField => this.list.fields.indexOf(searchField.name) >= 0)
+      } else {
+        _searchFields = _searchFields.slice(0, 4)
+      }
+
+      this.searchFields = _searchFields.map(selectField => {
+        const fieldType = (selectField.type && selectField.type.toLowerCase()) || 'string'
+        const numberTypes = ['integer', 'float']
+        return {
+          label: selectField.header || i18next.t(`field.${selectField.name}`),
+          name: selectField.name,
+          type:
+            fieldType === 'string'
+              ? 'text'
+              : numberTypes.indexOf(fieldType) >= 0
+              ? 'number'
+              : fieldType === 'boolean'
+              ? 'checkbox'
+              : fieldType,
+          queryName: selectField.queryName,
+          props:
+            fieldType === 'string'
+              ? { searchOper: 'i_like' }
+              : fieldType === 'object'
+              ? { searchOper: 'in' }
+              : { searchOper: 'eq' },
+          attrs: fieldType === 'boolean' ? ['indeterminated'] : []
+        }
+      })
       this.config = {
         ...this.config,
         columns: [
@@ -190,14 +190,29 @@ export class ObjectSelector extends LitElement {
           ...this.select.map(selectField => {
             return {
               ...selectField,
-              type: selectField.type ? selectField.type : 'string',
-              width: selectField.width ? selectField.width : 160,
-              header: selectField.header ? selectField.header : i18next.t(`field.${selectField.name}`)
+              type: selectField.type || 'string',
+              width: selectField.width || 160,
+              header: selectField.header || i18next.t(`field.${selectField.name}`)
             }
           })
         ]
       }
     } else {
+      this.searchFields = [
+        {
+          label: i18next.t('field.name'),
+          name: 'name',
+          type: 'text',
+          props: { searchOper: 'i_like' }
+        },
+        {
+          label: i18next.t('field.description'),
+          name: 'description',
+          type: 'text',
+          props: { searchOper: 'i_like' }
+        }
+      ]
+
       this.config = {
         ...this.config,
         columns: [
@@ -276,25 +291,20 @@ export class ObjectSelector extends LitElement {
     }
   }
 
-  _buildConditions(page, limit, sorters) {
+  async _buildConditions(page, limit, sorters) {
     const queryConditions = {
       filters: [],
       ...this.basicArgs
     }
 
-    queryConditions.filters = [...queryConditions.filters, ...this.serializeFormData()]
+    queryConditions.filters = [...queryConditions.filters, ...(await this.searchForm.getQueryFilters())]
     queryConditions.pagination = { page, limit }
     queryConditions.sortings = sorters
     return queryConditions
   }
 
-  serializeFormData() {
-    const searchInputs = Array.from(this.shadowRoot.querySelectorAll('#search-form input'))
-    return searchInputs
-      .filter(input => input.value)
-      .map(input => {
-        return { name: input.name, operator: 'i_like', value: `%${input.value}%` }
-      })
+  get searchForm() {
+    return this.shadowRoot.querySelector('search-form')
   }
 
   get selected() {
