@@ -39,7 +39,7 @@
     "@things-factory/shell": "^1.0.0-alpha.1"
   },
   "devDependencies": {
-    "@things-factory/grist-test": "*",
-    "@things-factory/tester": "*"
+    "@things-factory/grist-test": "^1.0.0-alpha.1",
+    "@things-factory/tester": "^1.0.0-alpha.1"
   }
 }
