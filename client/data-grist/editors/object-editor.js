@@ -96,7 +96,14 @@ export class ObjectEditor extends LitElement {
           detail: {
             before: this.value,
             after: {
-              ...selected,
+              ...(this.column.record.options.select || [])
+                .map(field => field.name)
+                .reduce((obj, fieldName) => {
+                  return (obj = {
+                    ...obj,
+                    [fieldName]: selected[fieldName]
+                  })
+                }, {}),
               [idField]: selected[idField],
               [nameField]: selected[nameField],
               [descriptionField]: selected[descriptionField]
@@ -118,7 +125,7 @@ export class ObjectEditor extends LitElement {
           .confirmCallback=${confirmCallback.bind(this)}
           .queryName=${this.column.record.options.queryName}
           .select=${this.column.record.options.select}
-          .list="${this.column.record.options.list}"
+          .list=${this.column.record.options.list}
           .basicArgs=${this.column.record.options.basicArgs}
         ></object-selector>
       `
