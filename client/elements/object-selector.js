@@ -62,6 +62,7 @@ export class ObjectSelector extends LitElement {
             this.data = await this.grist.fetch()
           }
         }}"
+        @submit="${async e => (this.data = await this.grist.fetch())}"
         .fields="${this.searchFields}"
       ></search-form>
 
