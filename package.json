@@ -1,6 +1,6 @@
 {
   "name": "@things-factory/resource-ui",
-  "version": "1.0.0-alpha.3",
+  "version": "2.0.0",
   "main": "dist-server/index.js",
   "browser": "client/index.js",
   "things-factory": true,
@@ -23,23 +23,23 @@
     "migration:revert": "node ./node_modules/typeorm/cli.js migration:revert"
   },
   "dependencies": {
-    "@things-factory/auth-provider-jwt": "^1.0.0-alpha.1",
-    "@things-factory/auth-ui-jwt": "^1.0.0-alpha.1",
-    "@things-factory/component-ui": "^1.0.0-alpha.1",
-    "@things-factory/context-ui": "^1.0.0-alpha.1",
-    "@things-factory/fav-base": "^1.0.0-alpha.1",
-    "@things-factory/form-ui": "^1.0.0-alpha.1",
-    "@things-factory/grist-ui": "^1.0.0-alpha.1",
-    "@things-factory/i18n-base": "^1.0.0-alpha.1",
-    "@things-factory/i18n-ui": "^1.0.0-alpha.1",
-    "@things-factory/import-ui-csv": "^1.0.0-alpha.1",
-    "@things-factory/layout-base": "^1.0.0-alpha.1",
-    "@things-factory/menu-base": "^1.0.0-alpha.1",
-    "@things-factory/resource-base": "^1.0.0-alpha.1",
-    "@things-factory/shell": "^1.0.0-alpha.1"
+    "@things-factory/auth-provider-jwt": "^2.0.0",
+    "@things-factory/auth-ui-jwt": "^2.0.0",
+    "@things-factory/component-ui": "^2.0.0",
+    "@things-factory/context-ui": "^2.0.0",
+    "@things-factory/fav-base": "^2.0.0",
+    "@things-factory/form-ui": "^2.0.0",
+    "@things-factory/grist-ui": "^2.0.0",
+    "@things-factory/i18n-base": "^2.0.0",
+    "@things-factory/i18n-ui": "^2.0.0",
+    "@things-factory/import-ui-csv": "^2.0.0",
+    "@things-factory/layout-base": "^2.0.0",
+    "@things-factory/menu-base": "^2.0.0",
+    "@things-factory/resource-base": "^2.0.0",
+    "@things-factory/shell": "^2.0.0"
   },
   "devDependencies": {
-    "@things-factory/grist-test": "^1.0.0-alpha.1",
-    "@things-factory/tester": "^1.0.0-alpha.1"
+    "@things-factory/grist-test": "^2.0.0",
+    "@things-factory/tester": "^2.0.0"
   }
 }
