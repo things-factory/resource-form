@@ -35,8 +35,7 @@
     "@things-factory/import-ui-csv": "^2.0.0",
     "@things-factory/layout-base": "^2.0.0",
     "@things-factory/menu-base": "^2.0.0",
-    "@things-factory/resource-base": "^2.0.0",
-    "@things-factory/shell": "^2.0.0"
+    "@things-factory/resource-base": "^2.0.0"
   },
   "devDependencies": {
     "@things-factory/grist-test": "^2.0.0",
