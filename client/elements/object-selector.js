@@ -1,9 +1,9 @@
-import { i18next } from '@things-factory/i18n-base'
-import { client, isMobileDevice, gqlBuilder } from '@things-factory/shell'
-import gql from 'graphql-tag'
-import { css, html, LitElement } from 'lit-element'
 import { MultiColumnFormStyles } from '@things-factory/form-ui'
 import '@things-factory/grist-ui'
+import { i18next } from '@things-factory/i18n-base'
+import { client, gqlBuilder, isMobileDevice } from '@things-factory/shell'
+import gql from 'graphql-tag'
+import { css, html, LitElement } from 'lit-element'
 
 export class ObjectSelector extends LitElement {
   static get properties() {
@@ -16,6 +16,7 @@ export class ObjectSelector extends LitElement {
       select: Array,
       list: Object,
       basicArgs: Object,
+      valueField: String,
       confirmCallback: Object,
       selectedRecords: Array
     }
@@ -107,7 +108,17 @@ export class ObjectSelector extends LitElement {
 
     if (!response.errors) {
       const records = response.data[this.queryName].items.map(item => {
-        if (this.value === item.id) {
+        let rowValue
+
+        if (this.valueField && typeof this.valueField === 'function') {
+          rowValue = this.valueField(item)
+        } else if (this.valueField) {
+          rowValue = item[this.valueField]
+        } else {
+          rowValue = item.id
+        }
+
+        if (this.value && this.value === rowValue) {
           this.selectedRecords = [item]
           item['__selected__'] = true
         }

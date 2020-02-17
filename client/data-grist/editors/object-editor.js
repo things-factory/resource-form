@@ -1,9 +1,7 @@
-import { LitElement, html, css } from 'lit-element'
-
 import '@material/mwc-icon'
-
-import { openPopup } from '@things-factory/layout-base'
 import { i18next } from '@things-factory/i18n-base'
+import { openPopup } from '@things-factory/layout-base'
+import { css, html, LitElement } from 'lit-element'
 import '../../elements/object-selector'
 
 export class ObjectEditor extends LitElement {
@@ -55,8 +53,18 @@ export class ObjectEditor extends LitElement {
     var value = this.value || {}
 
     var { nameField = 'name', descriptionField = 'description' } = this.column.record.options || {}
-    var name = nameField && value[nameField]
-    var description = descriptionField && value[descriptionField] && `(${value[descriptionField]})`
+    var name, description
+    if (typeof nameField === 'function') {
+      name = nameField(value)
+    } else {
+      name = value[nameField]
+    }
+
+    if (typeof descriptionField === 'function') {
+      description = descriptionField(value)
+    } else {
+      description = value[descriptionField] && `(${value[descriptionField]})`
+    }
 
     return html`
       ${!value
@@ -117,16 +125,27 @@ export class ObjectEditor extends LitElement {
     }
 
     var value = this.value || {}
+    var valueField = this.column.record.options.valueField
+    var actualValue
+    if (typeof valueField === 'function') {
+      actualValue = valueField(value)
+    } else if (valueField) {
+      actualValue = value[valueField]
+    } else {
+      actualValue = value.id
+    }
+
     var template =
       this.template ||
       html`
         <object-selector
-          .value=${value.id}
+          .value=${actualValue}
           .confirmCallback=${confirmCallback.bind(this)}
           .queryName=${this.column.record.options.queryName}
           .select=${this.column.record.options.select}
           .list=${this.column.record.options.list}
           .basicArgs=${this.column.record.options.basicArgs}
+          .valueField=${this.column.record.options.valueField}
         ></object-selector>
       `
 
