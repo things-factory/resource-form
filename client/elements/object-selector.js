@@ -164,7 +164,7 @@ export class ObjectSelector extends LitElement {
     }
 
     if (this.select && this.select.length > 0) {
-      let _searchFields = this.select.filter(selectField => !selectField.hidden)
+      let _searchFields = this.select.filter(selectField => !selectField.hidden && !selectField.ignoreCondition)
       if (this.list && this.list.fields && this.list.fields.length > 0) {
         _searchFields = _searchFields.filter(searchField => this.list.fields.indexOf(searchField.name) >= 0)
       } else {
