@@ -2,7 +2,9 @@ import { css, html } from 'lit-element'
 import { connect } from 'pwa-helpers/connect-mixin.js'
 import gql from 'graphql-tag'
 
-import { client, gqlBuilder, PageView, ScrollbarStyles, store, isMobileDevice } from '@things-factory/shell'
+import { client, PageView, store } from '@things-factory/shell'
+import { gqlBuilder, isMobileDevice } from '@things-factory/utils'
+import { ScrollbarStyles } from '@things-factory/styles'
 import { i18next } from '@things-factory/i18n-base'
 import '@things-factory/form-ui'
 

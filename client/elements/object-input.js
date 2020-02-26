@@ -1,6 +1,7 @@
 import { LitElement, html, css, customElement } from 'lit-element'
 import gql from 'graphql-tag'
-import { client, gqlBuilder } from '@things-factory/shell'
+import { client } from '@things-factory/shell'
+import { gqlBuilder } from '@things-factory/utils'
 import { openPopup } from '@things-factory/layout-base'
 import { i18next } from '@things-factory/i18n-base'
 
