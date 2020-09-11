@@ -213,14 +213,8 @@ export class ObjectSelector extends LitElement {
     } else {
       this.searchFields = [
         {
-          label: i18next.t('field.name'),
-          name: 'name',
-          type: 'text',
-          props: { searchOper: 'i_like' }
-        },
-        {
-          label: i18next.t('field.description'),
-          name: 'description',
+          label: i18next.t('field.product_info'),
+          name: 'product_info',
           type: 'text',
           props: { searchOper: 'i_like' }
         }

@@ -7,5 +7,6 @@
   "button.add": "add",
   "button.confirm": "confirm",
   "button.receive": "receive",
-  "title.select_item": "select item"
+  "title.select_item": "select item",
+  "field.product_info": "product info"
 }
